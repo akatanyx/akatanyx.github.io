@@ -33,7 +33,6 @@ export default function Login() {
                     id="email"
                     className="bg-black border border-[#C29736] text-[#888888] sm:text-sm  focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 placeholder-[#888888]"
                     placeholder="Email"
-                    required=""
                   />
                 </div>
                 <div>
@@ -43,7 +42,6 @@ export default function Login() {
                     id="password"
                     placeholder="••••••••"
                     className="bg-black border border-[#C29736] text-[#888888] sm:text-sm focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 placeholder-[#888888]"
-                    required=""
                   />
                 </div>
               </form>
