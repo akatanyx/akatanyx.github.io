@@ -219,7 +219,7 @@ export default function Home() {
                   <div className="p-4 flex flex-col justify-between">
                     <div>
                       <div className="font-bold">
-                        Varga Dragres "Rakshasa" DSR
+                        Varga Dragres Rakshasa DSR
                       </div>
                       <div className="text-[#9A9A9A] text-sm">
                         DZ-BT05/DSR01
