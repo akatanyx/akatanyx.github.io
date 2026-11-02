@@ -9,15 +9,18 @@ type Props = {
   tone?: "panel" | "deep";
   /** Let the white panel scroll on its own (turn off when something overhangs it). */
   scrollLeft?: boolean;
+  /** Let the dark panel scroll on its own. Off = the page fits the screen on desktop. */
+  scrollRight?: boolean;
 };
 
-/** White panel on the left, dark panel on the right — the layout every page shares. */
+/** White panel on the left, dark panel on the right: the layout every page shares. */
 export function SplitShell({
   left,
   children,
   leftWidth = "lg:w-[30%]",
   tone = "panel",
   scrollLeft = true,
+  scrollRight = true,
 }: Props) {
   return (
     <div className="flex min-h-dvh flex-col lg:h-dvh lg:flex-row lg:overflow-hidden">
@@ -29,21 +32,22 @@ export function SplitShell({
         {left}
       </aside>
       <main
-        className={`relative flex-1 text-white lg:h-full ${
+        className={`relative min-w-0 flex-1 text-white lg:h-full ${
           tone === "deep" ? "bg-panel-deep" : "bg-panel"
         }`}
       >
         <Decor />
-        <div className="h-full lg:overflow-y-auto">{children}</div>
+        <div className={`h-full ${scrollRight ? "lg:overflow-y-auto" : "lg:overflow-hidden"}`}>{children}</div>
       </main>
     </div>
   );
 }
 
-function Decor() {
-  const square = "h-2 w-2 bg-neutral-200";
+/** The corner squares and vertical code tag. `onWhite` flips them to dark for all-white pages. */
+export function Decor({ onWhite = false }: { onWhite?: boolean }) {
+  const square = `h-2 w-2 ${onWhite ? "bg-neutral-800" : "bg-neutral-200"}`;
   return (
-    <div aria-hidden className="pointer-events-none">
+    <div aria-hidden className={`pointer-events-none ${onWhite ? "fixed inset-0 text-black" : ""}`}>
       <div className="absolute top-8 right-8 grid grid-cols-2 gap-2.5">
         <span className={square} />
         <span className={square} />

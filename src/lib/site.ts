@@ -3,7 +3,7 @@ export const site = {
   name: "Aka",
   tagline: "A bored computer science student.",
   intro:
-    "I take on graphic design and web design gigs — brand assets, posters, landing pages and app mockups.",
+    "I take on graphic design and web design gigs: brand assets, posters, landing pages and app mockups.",
   // The vertical tag on the right edge of every page.
   code: "CSUGM21 - TLD61",
   socials: {

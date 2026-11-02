@@ -1,39 +1,45 @@
 import type { Metadata } from "next";
-import Link from "next/link";
 import { BackLink } from "@/components/BackLink";
 import { Media } from "@/components/Media";
-import { SplitShell } from "@/components/SplitShell";
+import { TransitionLink } from "@/components/TransitionLink";
+import { WhitePage } from "@/components/WhitePage";
 import { works } from "@/data/works";
+import { stagger } from "@/lib/motion";
 import { site } from "@/lib/site";
 
-export const metadata: Metadata = { title: `Works — ${site.name}` };
+export const metadata: Metadata = { title: `Works | ${site.name}` };
 
 export default function WorksPage() {
   return (
-    <SplitShell
-      leftWidth="lg:w-[30%]"
-      left={
-        <div className="flex flex-col gap-10 px-8 py-12 sm:px-14 lg:min-h-full">
-          <BackLink href="/">Home</BackLink>
-          <div className="lg:mt-auto lg:mb-auto">
-            <h1 className="text-4xl font-bold">Works</h1>
-            <p className="mt-3 max-w-xs text-sm leading-relaxed text-neutral-600">{site.intro}</p>
-            <p className="mt-6 text-xs tracking-[0.3em] text-neutral-400 uppercase">
-              {works.length} projects
-            </p>
-            <Link
-              href="/games/"
-              className="mt-8 inline-block border-b border-black pb-0.5 text-sm transition-opacity hover:opacity-60"
-            >
-              See my games →
-            </Link>
-          </div>
+    <WhitePage>
+      <BackLink href="/">Home</BackLink>
+
+      <header className="enter-up mt-12 flex flex-wrap items-end justify-between gap-6">
+        <div>
+          <h1 className="text-5xl font-bold">Works</h1>
+          <p className="mt-3 max-w-md text-sm leading-relaxed text-neutral-600">{site.intro}</p>
         </div>
-      }
-    >
-      <div className="grid gap-x-10 gap-y-14 px-8 py-24 sm:grid-cols-2 sm:px-14 lg:pr-28 lg:pl-20 xl:grid-cols-3">
-        {works.map((work) => (
-          <Link key={work.slug} href={`/works/${work.slug}/`} className="group block">
+        <div className="text-sm">
+          <p className="text-xs tracking-[0.3em] text-neutral-400 uppercase">{works.length} projects</p>
+          <TransitionLink
+            href="/games/"
+            variant="expand"
+            className="mt-3 inline-block border-b border-black pb-0.5 transition-opacity hover:opacity-60"
+          >
+            See my games →
+          </TransitionLink>
+        </div>
+      </header>
+
+      <div className="mt-14 grid gap-x-10 gap-y-14 sm:grid-cols-2 lg:grid-cols-3 2xl:grid-cols-4">
+        {works.map((work, i) => (
+          <TransitionLink
+            key={work.slug}
+            href={`/works/${work.slug}/`}
+            variant="expand"
+            className="enter-up group block"
+            style={stagger(i + 1)}
+          >
             <div className="overflow-hidden">
               <Media
                 src={work.images[0]}
@@ -43,12 +49,12 @@ export default function WorksPage() {
             </div>
             <div className="mt-4 flex items-baseline justify-between gap-4">
               <h2 className="text-lg font-semibold">{work.title}</h2>
-              <span className="text-xs text-white/50">{work.year}</span>
+              <span className="text-xs text-neutral-400">{work.year}</span>
             </div>
-            <p className="text-xs text-white/60">{work.category}</p>
-          </Link>
+            <p className="text-xs text-neutral-500">{work.category}</p>
+          </TransitionLink>
         ))}
       </div>
-    </SplitShell>
+    </WhitePage>
   );
 }

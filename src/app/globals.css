@@ -11,3 +11,116 @@ body {
   background: #ffffff;
   color: #000000;
 }
+
+/* ---------- Page transitions ----------
+   TransitionLink sets html[data-leaving] before navigating; TransitionEffects swaps it
+   for html[data-arrive] once the next page has painted. */
+
+:root {
+  --ease-panel: cubic-bezier(0.7, 0, 0.2, 1);
+  /* Extra entrance delay while the white panel is still sliding back. */
+  --base: 0ms;
+}
+html[data-leaving="expand"],
+html[data-arrive="expand"] {
+  --base: 380ms;
+}
+
+/* Leaving: contents fade out. */
+html[data-leaving] aside > *,
+html[data-leaving] main > div:last-child,
+html[data-leaving] .white-page > :not([aria-hidden]) {
+  opacity: 0;
+  transition: opacity 0.25s ease;
+}
+html[data-leaving="fade"] main > div:last-child {
+  transform: translateY(-10px);
+  transition:
+    opacity 0.25s ease,
+    transform 0.25s ease;
+}
+
+@media (min-width: 1024px) {
+  /* Leaving: the white panel sweeps across the whole screen… */
+  html[data-leaving="expand"] aside {
+    width: 100% !important;
+    transition: width 0.65s var(--ease-panel);
+  }
+  /* …and on the next page it slides back to its own width. */
+  html[data-arrive="expand"] aside {
+    animation: panel-in 0.7s var(--ease-panel);
+  }
+}
+
+@media (max-width: 1023.98px) {
+  /* Stacked on phones, so just fade the page. */
+  html[data-leaving="expand"] body > * {
+    opacity: 0;
+    transition: opacity 0.3s ease;
+  }
+}
+
+@keyframes panel-in {
+  from {
+    width: 100%;
+  }
+}
+
+/* Entrances. Add --i (via the stagger() helper) to delay items one after another. */
+.enter-up,
+.enter-left,
+.enter-right,
+.enter-zoom {
+  animation-duration: 0.6s;
+  animation-timing-function: cubic-bezier(0.2, 0.7, 0.2, 1);
+  animation-fill-mode: both;
+  animation-delay: calc(var(--base) + var(--i, 0) * 70ms);
+}
+.enter-up {
+  animation-name: enter-up;
+}
+.enter-left {
+  animation-name: enter-left;
+}
+.enter-right {
+  animation-name: enter-right;
+}
+.enter-zoom {
+  animation-name: enter-zoom;
+  animation-duration: 0.9s;
+}
+
+@keyframes enter-up {
+  from {
+    opacity: 0;
+    transform: translateY(18px);
+  }
+}
+@keyframes enter-left {
+  from {
+    opacity: 0;
+    transform: translateX(-18px);
+  }
+}
+@keyframes enter-right {
+  from {
+    opacity: 0;
+    transform: translateX(28px);
+  }
+}
+@keyframes enter-zoom {
+  from {
+    opacity: 0;
+    transform: scale(1.04);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .enter-up,
+  .enter-left,
+  .enter-right,
+  .enter-zoom,
+  html[data-arrive] aside {
+    animation: none;
+  }
+}

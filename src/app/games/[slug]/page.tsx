@@ -12,7 +12,7 @@ export function generateStaticParams() {
 
 export async function generateMetadata({ params }: PageProps<"/games/[slug]">): Promise<Metadata> {
   const game = getGame((await params).slug);
-  return { title: game ? `${game.name} — ${site.name}` : site.name };
+  return { title: game ? `${game.name} | ${site.name}` : site.name };
 }
 
 export default async function GamePage({ params }: PageProps<"/games/[slug]">) {
