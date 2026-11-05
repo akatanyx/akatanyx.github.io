@@ -1,5 +1,30 @@
 import type { View } from "@/lib/workMedia";
 
+export type Video = {
+  /** Full YouTube link; clicking the card opens it. */
+  url: string;
+  title?: string;
+  /** Exact view count, e.g. 26680; shown as "26K views" and used to sort, most-viewed first. */
+  views?: number;
+  /** Shown as-is, e.g. "Apr 9, 2019" and "10:24". */
+  date?: string;
+  duration?: string;
+  /**
+   * File name in public/works/<slug>/thumbnails/. Left out: the nth image there is used,
+   * and failing that, YouTube's own thumbnail for the video.
+   */
+  thumbnail?: string;
+};
+
+export type Channel = {
+  name: string;
+  handle?: string;
+  /** The channel page; the channel name links here. */
+  url?: string;
+  subscribers?: string;
+  videos: Video[];
+};
+
 export type Work = {
   slug: string;
   title: string;
@@ -20,6 +45,10 @@ export type Work = {
    * Images go in public/works/<slug>/desktop/, mobile/ and design/, e.g. 1-home.png.
    */
   showcase?: View[];
+  /** Design series to show as a flip-through book, e.g. ["company-profile"] for company-profile-1.png, -2, … */
+  books?: string[];
+  /** Show the project as a YouTube channel page: header, then a grid of real videos. */
+  channel?: Channel;
 };
 
 // Images are picked up automatically from public/works/<slug>/ (png, jpg or webp):
@@ -50,7 +79,115 @@ export const works: Work[] = [
     year: "2024-2026",
     showcase: ["design"],
   },
-  { slug: "linlinzy", title: "Linlinzy", role: "YouTube Thumbnail", year: "2019-2020" },
+  {
+    slug: "linlinzy",
+    title: "Linlinzy",
+    role: "YouTube Thumbnail",
+    year: "2019-2020",
+    channel: {
+      name: "Linlinzy",
+      handle: "@IndexHart",
+      url: "https://www.youtube.com/@IndexHart",
+      videos: [
+        {
+          url: "https://www.youtube.com/watch?v=PyQB3ZtCWnY",
+          title: "Grand Chase Kakao - Ley Limit Break!",
+          views: 26680,
+          date: "Apr 9, 2019",
+          duration: "20:00",
+          thumbnail: "1-ley.webp",
+        },
+        {
+          url: "https://www.youtube.com/watch?v=jx5of-Q98SQ",
+          title: "Grand Chase Kakao - Lass Limit Break",
+          views: 42578,
+          date: "Mar 20, 2019",
+          duration: "12:52",
+          thumbnail: "2-lass.webp",
+        },
+        {
+          url: "https://www.youtube.com/watch?v=KScxpPjdGsk",
+          title: "Grand Chase Kakao - Sieghart Limit Break!",
+          views: 30487,
+          date: "Mar 19, 2019",
+          duration: "6:56",
+          thumbnail: "3-sieghart.webp",
+        },
+        {
+          url: "https://www.youtube.com/watch?v=sI8brlXZAnk",
+          title: "Grand Chase Kakao - Lire Limit Break",
+          views: 60510,
+          date: "Nov 2, 2018",
+          duration: "5:42",
+          thumbnail: "4-lire.webp",
+        },
+        {
+          url: "https://www.youtube.com/watch?v=wPh1DeAoGzU",
+          title: "Grand Chase Kakao - Transcend 6 Lire",
+          views: 10147,
+          date: "May 28, 2019",
+          duration: "5:48",
+          thumbnail: "5-lire-transcend.webp",
+        },
+        {
+          url: "https://www.youtube.com/watch?v=yji4IdUFWeA",
+          title: "Grand Chase Kakao - Jiangshi Maiden Lime and Grim Reaper Rin",
+          views: 7066,
+          date: "Jun 26, 2019",
+          duration: "5:41",
+          thumbnail: "6-lime-rin.webp",
+        },
+        {
+          url: "https://www.youtube.com/watch?v=yO0ou5fCOIo",
+          title: "Grand Chase Kakao - Exorcist Dio and Gumiho Ley",
+          views: 6241,
+          date: "Jun 28, 2019",
+          duration: "3:41",
+          thumbnail: "7-dio-ley.webp",
+        },
+        {
+          url: "https://www.youtube.com/watch?v=E64h4V0McXc",
+          title: "Grand Chase Kakao - Surfing Master Zero and Twinkle Star Arme",
+          views: 5826,
+          date: "Jun 27, 2019",
+          duration: "4:34",
+          thumbnail: "8-zero-arme.webp",
+        },
+        {
+          url: "https://www.youtube.com/watch?v=grxBtCAZRxw",
+          title: "Grand Chase Kakao - Blooming Flower Edel and Golden Summer Week Lire",
+          views: 4954,
+          date: "Jul 20, 2019",
+          duration: "4:42",
+          thumbnail: "9-edel-lire.webp",
+        },
+        {
+          url: "https://www.youtube.com/watch?v=m2fEa2ghJJo",
+          title: "Grand Chase Kakao - Mermaid Dream Amy and Sol Fiesta Rufus",
+          views: 4315,
+          date: "Sep 6, 2019",
+          duration: "6:23",
+          thumbnail: "10-amy-rufus.webp",
+        },
+        {
+          url: "https://www.youtube.com/watch?v=tBC9yyZDvZo",
+          title: "Grand Chase Kakao - Choco Fondue",
+          views: 7180,
+          date: "Feb 20, 2020",
+          duration: "8:02",
+          thumbnail: "11-choco-fondue.webp",
+        },
+        {
+          url: "https://www.youtube.com/watch?v=8se0Vw-vWKI",
+          title: "Grand Chase Kakao - Dark Brownie",
+          views: 1800,
+          date: "Mar 2, 2020",
+          duration: "2:52",
+          thumbnail: "12-dark-brownie.webp",
+        },
+      ],
+    },
+  },
 
   // Practice
   {

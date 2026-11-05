@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
+import { ChannelShowcase } from "@/components/ChannelShowcase";
 import { Media } from "@/components/Media";
 import { Showcase } from "@/components/Showcase";
 import { getWork, works } from "@/data/works";
@@ -24,8 +25,9 @@ export default async function WorkPage({ params }: PageProps<"/works/[slug]">) {
   if (!work) notFound();
 
   const meta = [work.role, work.year, work.tools?.join(", ")].filter(Boolean).join(" · ");
+  if (work.channel) return <ChannelShowcase slug={work.slug} channel={work.channel} meta={meta} />;
   if (work.showcase) {
-    return <Showcase title={work.title} meta={meta} views={work.showcase} items={workViews(work.slug)} />;
+    return <Showcase title={work.title} meta={meta} views={work.showcase} items={workViews(work.slug, work.books)} />;
   }
 
   const images = workGallery(work.slug);

@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { BookViewer } from "@/components/BookViewer";
 import { Media } from "@/components/Media";
 import { asset } from "@/lib/site";
 import type { Screen, View } from "@/lib/workMedia";
@@ -15,13 +16,13 @@ type Frame = {
 };
 const frames: Partial<Record<View, Frame>> = {
   desktop: {
-    src: "/devices/laptop.png",
+    src: "/devices/laptop.webp",
     ratio: 1284 / 747,
     screenRatio: 914 / 561,
     screen: { left: 14.408, top: 10.308, width: 71.184, height: 75.1 },
   },
   mobile: {
-    src: "/devices/phone.png",
+    src: "/devices/phone.webp",
     ratio: 498 / 903,
     screenRatio: 343 / 745,
     screen: { left: 15.663, top: 8.638, width: 68.876, height: 82.503 },
@@ -121,6 +122,9 @@ export function Showcase({
             {/* eslint-disable-next-line @next/next/no-img-element -- static export, no image optimizer */}
             <img src={asset(frame.src)} alt="" className="pointer-events-none absolute inset-0 h-full w-full" />
           </div>
+        ) : current?.pages ? (
+          // A multi-page document, flipped through like a book.
+          <BookViewer key={current.src} pages={current.pages} title={`${title}: ${current.label}`} />
         ) : current ? (
           // Graphic design: the piece itself, as large as fits.
           // eslint-disable-next-line @next/next/no-img-element -- static export, no image optimizer
