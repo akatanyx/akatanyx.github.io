@@ -11,6 +11,12 @@ type Props = {
   scrollLeft?: boolean;
   /** Let the dark panel scroll on its own. Off = the page fits the screen on desktop. */
   scrollRight?: boolean;
+  /** Fit the screen on phones too (no page scroll), e.g. the home page. */
+  fitMobile?: boolean;
+  /** Leave the dark panel out on phones, showing only the white one. */
+  hideRightOnMobile?: boolean;
+  /** Keep the white panel pinned to the top on phones while the page scrolls (for a slim bar). */
+  stickyMobile?: boolean;
 };
 
 /** White panel on the left, dark panel on the right: the layout every page shares. */
@@ -21,18 +27,25 @@ export function SplitShell({
   tone = "panel",
   scrollLeft = true,
   scrollRight = true,
+  fitMobile = false,
+  hideRightOnMobile = false,
+  stickyMobile = false,
 }: Props) {
   return (
-    <div className="flex min-h-dvh flex-col lg:h-dvh lg:flex-row lg:overflow-hidden">
+    <div
+      className={`flex flex-col lg:h-dvh lg:flex-row lg:overflow-hidden ${
+        fitMobile ? "h-dvh overflow-hidden" : "min-h-dvh"
+      }`}
+    >
       <aside
-        className={`relative z-10 shrink-0 bg-white lg:h-full ${leftWidth} ${
+        className={`relative z-10 shrink-0 bg-white lg:h-full ${stickyMobile ? "max-lg:sticky max-lg:top-0 max-lg:shadow-[0_1px_0_rgba(0,0,0,0.08)]" : ""} ${leftWidth} ${
           scrollLeft ? "lg:overflow-y-auto" : ""
         }`}
       >
         {left}
       </aside>
       <main
-        className={`relative isolate min-w-0 flex-1 text-white lg:h-full ${
+        className={`relative isolate min-w-0 flex-1 text-white lg:h-full ${hideRightOnMobile ? "max-lg:hidden" : ""} ${
           tone === "deep" ? "bg-panel-deep" : "bg-panel"
         }`}
       >
@@ -48,7 +61,7 @@ export function Decor({ onWhite = false }: { onWhite?: boolean }) {
   const square = `h-2 w-2 ${onWhite ? "bg-neutral-800" : "bg-neutral-200"}`;
   return (
     <div aria-hidden className={`pointer-events-none z-20 ${onWhite ? "fixed inset-0 text-black" : "absolute inset-0"}`}>
-      <div className="absolute top-8 right-8 grid grid-cols-2 gap-2.5">
+      <div className="absolute top-8 right-8 hidden grid-cols-2 gap-2.5 lg:grid">
         <span className={square} />
         <span className={square} />
         <span />

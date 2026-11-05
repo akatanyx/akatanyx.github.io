@@ -3,6 +3,7 @@ import { notFound } from "next/navigation";
 import { ChannelShowcase } from "@/components/ChannelShowcase";
 import { Media } from "@/components/Media";
 import { Showcase } from "@/components/Showcase";
+import { Zoomable } from "@/components/Zoomable";
 import { getWork, works } from "@/data/works";
 import { workGallery, workViews } from "@/lib/workMedia";
 import { stagger } from "@/lib/motion";
@@ -27,7 +28,16 @@ export default async function WorkPage({ params }: PageProps<"/works/[slug]">) {
   const meta = [work.role, work.year, work.tools?.join(", ")].filter(Boolean).join(" · ");
   if (work.channel) return <ChannelShowcase slug={work.slug} channel={work.channel} meta={meta} />;
   if (work.showcase) {
-    return <Showcase title={work.title} meta={meta} views={work.showcase} items={workViews(work.slug, work.books)} />;
+    return <Showcase
+        title={work.title}
+        meta={[work.role, work.year].filter(Boolean).join(" · ")}
+        tools={work.tools}
+        designTools={work.designTools}
+        fitHeight={work.fitHeight}
+        description={work.description}
+        views={work.showcase}
+        items={workViews(work.slug, work.books)}
+      />;
   }
 
   const images = workGallery(work.slug);
@@ -35,17 +45,25 @@ export default async function WorkPage({ params }: PageProps<"/works/[slug]">) {
   const frames = [0, 1, 2].map((i) => images[i]);
 
   return (
-    <article className="px-8 py-24 sm:px-14 lg:pr-36 lg:pl-20">
+    <article className="px-8 pt-8 pb-16 sm:px-14 lg:py-24 lg:pr-36 lg:pl-20">
       <div className="grid grid-cols-3 gap-4 sm:gap-10 xl:gap-16">
-        {frames.map((src, i) => (
-          <Media
-            key={i}
-            src={src}
-            alt={`${work.title} image ${i + 1}`}
-            className="enter-up aspect-[5/9] w-full"
-            style={stagger(i + 1)}
-          />
-        ))}
+        {frames.map((src, i) => {
+          const frame = (
+            <Media
+              src={src}
+              alt={`${work.title} image ${i + 1}`}
+              className="enter-up aspect-[5/9] w-full"
+              style={stagger(i + 1)}
+            />
+          );
+          return src ? (
+            <Zoomable key={i} src={src} alt={`${work.title} image ${i + 1}`} className="overflow-hidden">
+              {frame}
+            </Zoomable>
+          ) : (
+            <div key={i}>{frame}</div>
+          );
+        })}
       </div>
 
       <div className="enter-up" style={stagger(4)}>
@@ -70,7 +88,9 @@ export default async function WorkPage({ params }: PageProps<"/works/[slug]">) {
       {images.length > 3 && (
         <div className="mt-14 grid gap-6 sm:grid-cols-2">
           {images.slice(3).map((src, i) => (
-            <Media key={src} src={src} alt={`${work.title} image ${i + 4}`} className="w-full" />
+            <Zoomable key={src} src={src} alt={`${work.title} image ${i + 4}`}>
+              <Media src={src} alt={`${work.title} image ${i + 4}`} className="w-full" />
+            </Zoomable>
           ))}
         </div>
       )}

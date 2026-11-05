@@ -26,6 +26,14 @@ html[data-arrive="expand"] {
   --base: 380ms;
 }
 
+/* The phone navbar on Works/Games fades out with the page it belongs to. */
+html[data-leaving] .scroll-nav {
+  opacity: 0;
+  transition:
+    opacity 0.25s ease,
+    translate 0.3s ease-out;
+}
+
 /* Leaving: contents fade out. A "fade" (switching projects or games) leaves the sidebar in place. */
 html[data-leaving="expand"] aside > *,
 html[data-leaving] main > div:last-child,
@@ -53,10 +61,30 @@ html[data-leaving="fade"] main > div:last-child {
 }
 
 @media (max-width: 1023.98px) {
-  /* Stacked on phones, so just fade the page. */
-  html[data-leaving="expand"] body > * {
-    opacity: 0;
-    transition: opacity 0.3s ease;
+  /* Stacked on phones: the white panel grows down over the page instead of sideways,
+     then on the next page shrinks back up to its own height. The growing white is a
+     layer behind the panel's content, so the content can still fade on top of it. */
+  aside::after {
+    content: "";
+    position: absolute;
+    inset: 0 0 auto 0;
+    z-index: -1;
+    height: 100%;
+    background: #fff;
+    pointer-events: none;
+  }
+  html[data-leaving="expand"] aside::after {
+    height: 100dvh;
+    transition: height 0.65s var(--ease-panel);
+  }
+  html[data-arrive="expand"] aside::after {
+    animation: panel-in-mobile 0.7s var(--ease-panel);
+  }
+}
+
+@keyframes panel-in-mobile {
+  from {
+    height: 100dvh;
   }
 }
 

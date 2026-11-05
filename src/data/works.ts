@@ -1,4 +1,4 @@
-import type { View } from "@/lib/workMedia";
+import type { Book, View } from "@/lib/workMedia";
 
 export type Video = {
   /** Full YouTube link; clicking the card opens it. */
@@ -35,6 +35,10 @@ export type Work = {
   /** One-liner shown in the side list. Falls back to the role. */
   summary?: string;
   tools?: string[];
+  /** Tools for the Graphic Design view, when they differ from `tools` (the web stack). */
+  designTools?: string[];
+  /** In the laptop/phone, shrink each whole screenshot to fit the screen instead of scrolling. */
+  fitHeight?: boolean;
   description?: string;
   url?: string;
   /** Personal or study pieces, listed under "Practice" instead of with client work. */
@@ -46,7 +50,7 @@ export type Work = {
    */
   showcase?: View[];
   /** Design series to show as a flip-through book, e.g. ["company-profile"] for company-profile-1.png, -2, … */
-  books?: string[];
+  books?: Book[];
   /** Show the project as a YouTube channel page: header, then a grid of real videos. */
   channel?: Channel;
 };
@@ -56,34 +60,83 @@ export type Work = {
 // No need to list them here.
 // Add `practice: true` to put a piece in the Practice section.
 export const works: Work[] = [
-  { slug: "reverie-cards", title: "Reverie Cards", role: "Graphic Designer", year: "2026", showcase: ["design"] },
-  { slug: "xollexio", title: "Xollexio", role: "Web Developer", year: "2026", showcase: ["desktop", "mobile"] },
+  {
+    slug: "reverie-cards",
+    title: "Reverie Cards",
+    role: "Web Developer and Graphic Designer",
+    year: "2026",
+    tools: ["Next.js", "React", "TypeScript", "PostgreSQL"],
+    designTools: ["Figma"],
+    showcase: ["desktop", "mobile", "design"],
+    books: ["catalogue"],
+    description:
+      "It's my own trading card shop in Yogyakarta, importing hard-to-find Japanese card game products for local players. I built the website so customers can browse singles and sets, follow pre-orders, tournament schedules and news, then check out with QRIS, bank transfer or store points.",
+  },
+  {
+    slug: "xollexio",
+    title: "Xollexio",
+    role: "Web Developer",
+    year: "2026",
+    tools: ["Next.js", "React", "TypeScript", "PostgreSQL"],
+    showcase: ["desktop", "mobile"],
+    description:
+      "It's a two-sided marketplace for trading cards, covering over 73,500 cards. You can sell in six different ways, including auctions and fixed-price listings. I built the API routes and data models, with Google sign-in, payment verification, live auctions, chat and an admin panel.",
+  },
   {
     slug: "hobbystation-hideout",
     title: "Hobbystation Hideout",
-    role: "Web Developer and Graphic Designer",
+    role: "Graphic Designer",
     year: "2021-2025",
-    showcase: ["desktop", "mobile", "design"],
+    tools: ["Figma"],
+    showcase: ["design"],
+    description:
+      "This one was posters I made for my own business. The design might vary from one to another due to me improving my design each year, although I cannot pinpoint what year it is, but it covers most of my design style changes.",
   },
   {
     slug: "nash-sy",
     title: "Nash Sy",
     role: "Web Developer and Graphic Designer",
     year: "2023-2024",
+    tools: ["Next.js", "React", "TypeScript", "PostgreSQL"],
+    designTools: ["Figma"],
     showcase: ["desktop", "mobile", "design"],
+    description:
+      "It's a game top-up platform, the orders are fulfilled automatically with Midtrans payments and in-game purchase validations. I also built the admin panel for accounting, reports and user management, plus price syncing and exchange rates.",
   },
   {
     slug: "mak-semarangan",
     title: "Mak Semarangan",
-    role: "Graphic Design",
+    role: "Promotional Graphic Design",
     year: "2024-2026",
+    tools: ["CorelDRAW"],
     showcase: ["design"],
+    books: [{ name: "menu-book", cover: false }],
+  },
+  { slug: "lapisqoe", title: "LapisQoe", role: "Promotional Graphic Design", year: "2025", showcase: ["design"] },
+  {
+    slug: "project-hunter-dn",
+    title: "Project Hunter DN",
+    role: "Website Design and Launcher Design",
+    year: "2025",
+    tools: ["Figma"],
+    showcase: ["desktop"],
+    description:
+      "My website design for them was paid for but never used. They used the launcher I designed for their game instead. Since it was never used, it was never polished and more of a draft of an idea.",
+  },
+  {
+    slug: "code-saga-dn",
+    title: "Code Saga DN",
+    role: "Website Design and Launcher Design",
+    year: "2025",
+    tools: ["Figma"],
+    showcase: ["desktop"],
   },
   {
     slug: "linlinzy",
     title: "Linlinzy",
     role: "YouTube Thumbnail",
     year: "2019-2020",
+    tools: ["Adobe Photoshop"],
     channel: {
       name: "Linlinzy",
       handle: "@IndexHart",
@@ -191,65 +244,62 @@ export const works: Work[] = [
 
   // Practice
   {
-    slug: "cloud-web",
+    slug: "pricing-practice",
     practice: true,
-    title: "Cloud Web",
+    title: "Pricing Practice",
+    showcase: ["desktop"],
     summary: "Cloud deployment web for cloud computing assignment",
     role: "Web design",
-    year: "2025",
+    year: "2023",
     tools: ["Figma", "Next.js"],
     description:
       "A landing page and dashboard for deploying small apps to the cloud. I designed the layout and visual system in Figma, then built the front end.",
   },
   {
-    slug: "letseat",
+    slug: "food-delivery-app",
     practice: true,
-    title: "LetsEAT",
+    title: "Food Delivery App",
+    showcase: ["mobile"],
     summary: "Authentication page for software engineering task",
     role: "App design",
-    year: "2024",
+    year: "2023",
     tools: ["Figma"],
     description: "Sign-in and sign-up flow for a food ordering app, focused on a short, friendly onboarding.",
   },
   {
-    slug: "letscash",
+    slug: "e-wallet-app",
     practice: true,
-    title: "LetsCASH",
+    title: "E-wallet App",
+    showcase: ["mobile"],
     summary: "E-Wallet system for software engineering assignment",
     role: "App design",
-    year: "2024",
+    year: "2023",
     tools: ["Figma"],
-    description: "E-wallet screens covering balance, top-up, transfer and transaction history.",
+    description:
+      "It's an attempt to make an E-wallet system, the color was heavily referencing DANA E-wallet. It was a practice I made around 2023 too.",
   },
   {
     slug: "logistics",
     practice: true,
-    title: "Logistics",
+    title: "Logistics App",
+    showcase: ["mobile"],
     summary: "App mockup made for software engineering method task",
     role: "App design",
-    year: "2024",
-    tools: ["Figma"],
-    description: "Mobile mockups for tracking shipments, from pickup to delivery confirmation.",
-  },
-  {
-    slug: "health-facility",
-    practice: true,
-    title: "Health Facility",
-    summary: "Application for health facilities for software engineering exam",
-    role: "Web design",
     year: "2023",
     tools: ["Figma"],
-    description: "A web app for finding nearby health facilities and booking appointments.",
+    description: "This was just a practice, not to be substituted with real system.",
   },
   {
     slug: "healthcare-app",
     practice: true,
     title: "Healthcare App",
+    showcase: ["mobile"],
     summary: "Made for software engineering assignment",
     role: "App design",
     year: "2023",
     tools: ["Figma"],
-    description: "Patient-facing app with records, reminders and doctor chat.",
+    description:
+      "I made this design originally for my ex, but she never used it. It's an app to track your health and fitness. It was more of a practice, and its one of the earliest designs I did. Not the best, but I started somewhere.",
   },
 ];
 

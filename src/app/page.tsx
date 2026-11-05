@@ -10,8 +10,10 @@ export default function Home() {
     <SplitShell
       leftWidth="lg:w-[38%]"
       scrollLeft={false}
+      fitMobile
       left={
-        <div className="flex min-h-[70dvh] flex-col justify-center px-8 py-20 sm:px-20 lg:h-full lg:px-14 xl:px-18">
+        // On phones the intro sits at the top and the white panel is just tall enough for it.
+        <div className="flex flex-col px-8 pt-14 pb-16 sm:px-20 lg:h-full lg:justify-center lg:py-20 lg:px-14 xl:px-18">
           <HelloName className="enter-up text-4xl font-bold tracking-tight text-balance sm:text-5xl lg:text-[2.6rem] xl:text-5xl" />
           <p className="enter-up mt-2 text-base sm:text-lg" style={stagger(1)}>
             {site.tagline}
@@ -26,14 +28,15 @@ export default function Home() {
             aria-label="See my works"
             className="absolute -bottom-11 left-8 grid h-[88px] w-[88px] place-items-center rounded-full bg-white shadow-[0_4px_12px_rgba(0,0,0,0.35)] transition-transform hover:scale-105 lg:-right-11 lg:bottom-10 lg:left-auto"
           >
-            <svg viewBox="0 0 24 24" className="h-11 w-11" fill="none" stroke="black" strokeWidth={2.5}>
+            {/* Points down on phones (the panels are stacked), right on desktop. */}
+            <svg viewBox="0 0 24 24" className="h-11 w-11 rotate-90 lg:rotate-0" fill="none" stroke="black" strokeWidth={2.5}>
               <path d="M9 4l8 8-8 8" strokeLinecap="round" strokeLinejoin="round" />
             </svg>
           </TransitionLink>
         </div>
       }
     >
-      <nav className="flex min-h-[50dvh] flex-col justify-center gap-6 px-8 py-24 sm:px-20 lg:h-full lg:px-28">
+      <nav className="flex h-full flex-col justify-center gap-6 px-8 pt-12 pb-8 sm:px-20 lg:px-28 lg:py-24">
         <p className="enter-right text-xs tracking-[0.4em] text-white/50 uppercase" style={stagger(2)}>
           Explore
         </p>

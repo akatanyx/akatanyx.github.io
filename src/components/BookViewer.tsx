@@ -9,16 +9,16 @@ const FLIP_MS = 700;
 
 /**
  * A multi-page document shown as a book: the cover sits alone like a closed book, then
- * pages open in pairs. ← / → (buttons or keyboard) turn a page with a 3D flip.
+ * pages open in pairs. With `cover={false}` (e.g. a menu) it opens straight to 1|2. ← / → (buttons or keyboard) turn a page with a 3D flip.
  * Must sit inside a size container (it sizes itself with cq units).
  */
-export function BookViewer({ pages, title }: { pages: string[]; title: string }) {
-  // Spread 0 is the cover on its own (right side); then 2|3, 4|5, …
+export function BookViewer({ pages, title, cover = true }: { pages: string[]; title: string; cover?: boolean }) {
   const spreads = useMemo<Spread[]>(() => {
-    const s: Spread[] = [[null, pages[0]]];
-    for (let i = 1; i < pages.length; i += 2) s.push([pages[i], pages[i + 1] ?? null]);
+    // With a cover, page 1 sits alone; without, it opens straight to 1|2, 3|4, …
+    const s: Spread[] = cover ? [[null, pages[0]]] : [];
+    for (let i = cover ? 1 : 0; i < pages.length; i += 2) s.push([pages[i], pages[i + 1] ?? null]);
     return s;
-  }, [pages]);
+  }, [pages, cover]);
 
   const [at, setAt] = useState(0);
   const [flip, setFlip] = useState<{ dir: 1 | -1; to: number } | null>(null);

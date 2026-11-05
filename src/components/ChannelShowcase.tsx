@@ -35,7 +35,7 @@ export function ChannelShowcase({ slug, channel, meta }: { slug: string; channel
   const cards = videos.length ? videos : folderThumbs.map((thumb) => ({ thumb, url: "", title: undefined }));
 
   return (
-    <div className="px-8 pt-24 pb-24 sm:px-14 lg:pt-10 lg:pr-28 lg:pl-16">
+    <div className="px-8 pt-8 pb-16 sm:px-14 lg:pt-10 lg:pr-28 lg:pl-16">
       <p className="enter-up text-xs tracking-[0.25em] text-white/50 uppercase">{meta}</p>
 
       <header className="enter-up mt-4 flex flex-wrap items-center gap-5" style={stagger(1)}>

@@ -31,6 +31,8 @@ export function GameView({ game }: { game: Game }) {
       leftWidth="lg:w-[36%]"
       scrollLeft={false}
       scrollRight={false}
+      // Phones: just the profile, thoughts and agents for now.
+      hideRightOnMobile
       left={<GameSide game={game} avatar={findImage(`${dir}/avatar`)} agents={agents} />}
     >
       <div

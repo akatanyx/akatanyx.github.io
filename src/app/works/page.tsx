@@ -12,7 +12,7 @@ export const metadata: Metadata = { title: `Works | ${site.name}` };
 
 export default function WorksPage() {
   return (
-    <WhitePage>
+    <WhitePage title="Works">
       <BackLink href="/">Home</BackLink>
 
       <header className="enter-up mt-12 flex flex-wrap items-end justify-between gap-6">

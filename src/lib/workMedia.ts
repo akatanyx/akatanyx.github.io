@@ -1,8 +1,11 @@
 import path from "node:path";
 import { findImage, listImages } from "@/lib/images";
 
-/** One item in the viewer. A book has several `pages`; `src` is its cover. */
-export type Screen = { label: string; src: string; pages?: string[] };
+/** One item in the viewer. A book has several `pages`; `src` is its first page. */
+export type Screen = { label: string; src: string; pages?: string[]; cover?: boolean };
+
+/** A design series shown as a book: "catalogue", or { name: "menu", cover: false } to open in spreads 1-2, 3-4. */
+export type Book = string | { name: string; cover?: boolean };
 
 // Everything here reads public/works/<slug>/ at build time.
 
@@ -26,7 +29,7 @@ export type View = "desktop" | "mobile" | "design";
  * `books` names design series to show as one book: "company-profile" gathers
  * company-profile-1.png (the cover), company-profile-2.png, … into a single item.
  */
-export function workViews(slug: string, books: string[] = []): Record<View, Screen[]> {
+export function workViews(slug: string, books: Book[] = []): Record<View, Screen[]> {
   const design = asBooks(screens(`/works/${slug}/design`), books);
   return {
     desktop: screens(`/works/${slug}/desktop`),
@@ -35,22 +38,23 @@ export function workViews(slug: string, books: string[] = []): Record<View, Scre
   };
 }
 
-function asBooks(items: Screen[], books: string[]): Screen[] {
+function asBooks(items: Screen[], bookList: Book[]): Screen[] {
+  const books = bookList.map((b) => (typeof b === "string" ? { name: b, cover: true } : { cover: true, ...b }));
   const out: Screen[] = [];
   const found = new Map<string, Screen>();
   for (const item of items) {
     const name = path.posix.basename(item.src).replace(/\.[^.]+$/, "").toLowerCase();
-    const book = books.find((b) => name.startsWith(b.toLowerCase()) && /^[-_ ]?\d+$/.test(name.slice(b.length)));
+    const book = books.find((b) => name.startsWith(b.name.toLowerCase()) && /^[-_ ]?\d+$/.test(name.slice(b.name.length)));
     if (!book) {
       out.push(item);
       continue;
     }
     // Pages arrive in file-name order, so the first one found is the cover.
-    const existing = found.get(book);
+    const existing = found.get(book.name);
     if (existing) existing.pages!.push(item.src);
     else {
-      const entry = { src: item.src, label: labelFrom(book), pages: [item.src] };
-      found.set(book, entry);
+      const entry = { src: item.src, label: labelFrom(book.name), pages: [item.src], cover: book.cover };
+      found.set(book.name, entry);
       out.push(entry);
     }
   }

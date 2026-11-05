@@ -5,7 +5,7 @@ import { WorkSidebar } from "@/components/WorkSidebar";
 // and only the right side changes.
 export default function WorkDetailLayout({ children }: { children: React.ReactNode }) {
   return (
-    <SplitShell leftWidth="lg:w-[29%]" left={<WorkSidebar />}>
+    <SplitShell leftWidth="lg:w-[29%]" stickyMobile left={<WorkSidebar />}>
       {children}
     </SplitShell>
   );

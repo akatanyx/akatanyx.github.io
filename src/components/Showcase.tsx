@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { BookViewer } from "@/components/BookViewer";
 import { Media } from "@/components/Media";
+import { Zoomable } from "@/components/Zoomable";
 import { asset } from "@/lib/site";
 import type { Screen, View } from "@/lib/workMedia";
 
@@ -39,33 +40,53 @@ const viewLabel: Record<View, string> = { desktop: "Desktop", mobile: "Mobile", 
 export function Showcase({
   title,
   meta,
+  tools,
+  designTools,
+  fitHeight = false,
+  description,
   views,
   items,
 }: {
   title: string;
   meta: string;
+  /** Shown after `meta`: the web stack on device views, `designTools` (if set) on Graphic Design. */
+  tools?: string[];
+  designTools?: string[];
+  /** Show each whole screenshot shrunk to the screen's height (no scrolling, no cropping). */
+  fitHeight?: boolean;
+  description?: string;
   views: View[];
   items: Record<View, Screen[]>;
 }) {
   const [view, setView] = useState<View>(views.find((v) => items[v].length) ?? views[0]);
   const [index, setIndex] = useState<Partial<Record<View, number>>>({});
-  // Screenshots much taller than the screen are full-page captures: let them scroll.
-  // Anything else fills the screen top to bottom.
-  const [tall, setTall] = useState<Record<string, boolean>>({});
+  // How each screenshot sits in the device, decided once it loads (see measureFit).
+  const [fit, setFit] = useState<Record<string, Fit>>({});
+  // Screens the visitor has started scrolling, so the "Scroll" cue can go away.
+  const [scrolled, setScrolled] = useState<Record<string, boolean>>({});
 
   const frame = frames[view];
   const list = items[view];
-  const current = list[index[view] ?? 0];
+  const at = index[view] ?? 0;
+  const current = list[at];
+  // A popup shows over the last full screen before it, dimmed, like a real dialog.
+  const popup = current && isPopup(current) ? current : undefined;
+  const base = popup ? list.slice(0, at).findLast((s) => !isPopup(s)) : current;
+  const baseFit = base ? fit[base.src] : undefined;
 
   return (
-    <div className="flex flex-col px-8 pt-24 pb-24 sm:px-14 lg:h-full lg:pt-10 lg:pr-28 lg:pb-10 lg:pl-16">
-      <header className="enter-up flex flex-wrap items-end justify-between gap-4 lg:pr-12">
-        <div>
+    <div className="flex flex-col px-8 pt-8 pb-16 sm:px-14 lg:h-full lg:pt-10 lg:pr-28 lg:pb-10 lg:pl-16">
+      {/* The toggle stays top-right; the text beside it wraps instead of pushing it down. */}
+      <header className="enter-up flex flex-wrap items-start justify-between gap-4 lg:flex-nowrap lg:pr-12">
+        <div className="min-w-0 lg:flex-1">
           <h1 className="text-3xl font-bold">{title}</h1>
-          <p className="mt-1 text-xs tracking-[0.25em] text-white/50 uppercase">{meta}</p>
+          <p className="mt-1 text-xs tracking-[0.25em] text-white/50 uppercase">
+            {[meta, ((view === "design" && designTools) || tools)?.join(", ")].filter(Boolean).join(" · ")}
+          </p>
+          {description && <p className="mt-3 max-w-xl text-sm leading-relaxed text-white/75">{description}</p>}
         </div>
         {views.length > 1 && (
-          <div role="tablist" aria-label="View" className="flex rounded-full bg-black/25 p-1 text-sm">
+          <div role="tablist" aria-label="View" className="flex shrink-0 rounded-full bg-black/25 p-1 text-sm">
             {views.map((v) => (
               <button
                 key={v}
@@ -94,7 +115,11 @@ export function Showcase({
             style={{ width: `min(100cqw, ${100 * frame.ratio}cqh)`, aspectRatio: frame.ratio }}
           >
             <div
-              className="absolute overflow-y-auto bg-neutral-900 [scrollbar-width:none]"
+              onScroll={(e) => {
+                if (base && e.currentTarget.scrollTop > 8 && !scrolled[base.src])
+                  setScrolled((s) => ({ ...s, [base.src]: true }));
+              }}
+              className="absolute overflow-y-auto overscroll-contain bg-neutral-900 [scrollbar-width:none]"
               style={{
                 left: `${frame.screen.left}%`,
                 top: `${frame.screen.top}%`,
@@ -102,38 +127,93 @@ export function Showcase({
                 height: `${frame.screen.height}%`,
               }}
             >
-              {current ? (
-                // eslint-disable-next-line @next/next/no-img-element -- static export, no image optimizer
-                <img
-                  key={current.src}
-                  src={asset(current.src)}
-                  alt={`${title}: ${current.label}`}
-                  onLoad={(e) => {
-                    const img = e.currentTarget;
-                    const isTall = img.naturalHeight / img.naturalWidth > 1.15 / frame.screenRatio;
-                    setTall((t) => (t[current.src] === isTall ? t : { ...t, [current.src]: isTall }));
-                  }}
-                  className={`screen-in block w-full ${tall[current.src] ? "" : "h-full object-cover object-top"}`}
-                />
+              {base && isApp(base) ? (
+                // A program, not a website: its window sits on a desktop with a taskbar.
+                <div key={base.src} className="screen-in relative h-full w-full overflow-hidden" style={{ background: wallpaper }}>
+                  {/* eslint-disable-next-line @next/next/no-img-element -- static export, no image optimizer */}
+                  <img
+                    src={asset(base.src)}
+                    alt={`${title}: ${base.label}`}
+                    className="absolute top-[46%] left-1/2 max-h-[74%] max-w-[76%] -translate-x-1/2 -translate-y-1/2 object-contain drop-shadow-[0_18px_30px_rgba(0,0,0,0.55)]"
+                  />
+                  <div aria-hidden className="absolute inset-x-0 bottom-0 flex h-[7%] items-center justify-center gap-[1.6%] bg-black/45 backdrop-blur">
+                    {["#4c8dff", "#e9e9e9", "#f2b233", "#e5484d"].map((c) => (
+                      <span key={c} className="aspect-square h-[52%] rounded-[22%]" style={{ background: c, opacity: 0.85 }} />
+                    ))}
+                  </div>
+                </div>
+              ) : base && fitHeight ? (
+                <div key={base.src} className="screen-in flex h-full w-full justify-center" style={{ background: baseFit?.color }}>
+                  {/* eslint-disable-next-line @next/next/no-img-element -- static export, no image optimizer */}
+                  <img
+                    src={asset(base.src)}
+                    alt={`${title}: ${base.label}`}
+                    onLoad={(e) => {
+                      const color = bottomColor(e.currentTarget);
+                      setFit((f) => (f[base.src]?.color === color ? f : { ...f, [base.src]: { mode: "fill", color } }));
+                    }}
+                    className="h-full w-auto max-w-full object-contain"
+                  />
+                </div>
+              ) : base ? (
+                <div className={baseFit?.mode === "fill" ? "h-full" : "min-h-full"} style={{ background: baseFit?.color }}>
+                  {/* eslint-disable-next-line @next/next/no-img-element -- static export, no image optimizer */}
+                  <img
+                    key={base.src}
+                    src={asset(base.src)}
+                    alt={popup ? "" : `${title}: ${base.label}`}
+                    onLoad={(e) => {
+                      const next = measureFit(e.currentTarget, frame.screenRatio);
+                      setFit((f) => (f[base.src]?.mode === next.mode ? f : { ...f, [base.src]: next }));
+                    }}
+                    className={`screen-in block w-full ${baseFit?.mode === "fill" ? "h-full object-cover object-top" : ""}`}
+                  />
+                </div>
               ) : (
-                <ComingSoon />
+                !popup && <ComingSoon />
+              )}
+              {popup && (
+                <div key={popup.src} className="screen-in absolute inset-0 grid place-items-center bg-black/55 p-[7%]">
+                  {/* eslint-disable-next-line @next/next/no-img-element -- static export, no image optimizer */}
+                  <img
+                    src={asset(popup.src)}
+                    alt={`${title}: ${popup.label}`}
+                    className="max-h-full max-w-full object-contain drop-shadow-[0_10px_25px_rgba(0,0,0,0.35)]"
+                  />
+                </div>
               )}
             </div>
             {/* eslint-disable-next-line @next/next/no-img-element -- static export, no image optimizer */}
             <img src={asset(frame.src)} alt="" className="pointer-events-none absolute inset-0 h-full w-full" />
+            {base && !popup && baseFit?.mode === "tall" && (
+              // Tells visitors a long screenshot continues; fades once they scroll.
+              <span
+                aria-hidden
+                className={`pointer-events-none absolute left-1/2 flex -translate-x-1/2 items-center gap-1 rounded-full bg-black/70 px-3 py-1 text-[11px] font-medium text-white transition-opacity duration-300 ${
+                  scrolled[base.src] ? "opacity-0" : "opacity-100"
+                }`}
+                style={{ bottom: `${100 - frame.screen.top - frame.screen.height + 3}%` }}
+              >
+                Scroll
+                <svg viewBox="0 0 24 24" className="h-3 w-3 animate-bounce" fill="none" stroke="currentColor" strokeWidth={3}>
+                  <path d="M6 9l6 6 6-6" strokeLinecap="round" strokeLinejoin="round" />
+                </svg>
+              </span>
+            )}
           </div>
         ) : current?.pages ? (
           // A multi-page document, flipped through like a book.
-          <BookViewer key={current.src} pages={current.pages} title={`${title}: ${current.label}`} />
+          <BookViewer key={current.src} pages={current.pages} cover={current.cover} title={`${title}: ${current.label}`} />
         ) : current ? (
-          // Graphic design: the piece itself, as large as fits.
-          // eslint-disable-next-line @next/next/no-img-element -- static export, no image optimizer
-          <img
-            key={current.src}
-            src={asset(current.src)}
-            alt={`${title}: ${current.label}`}
-            className="screen-in max-h-full max-w-full rounded-lg object-contain shadow-[0_20px_50px_rgba(0,0,0,0.45)]"
-          />
+          // Graphic design: the piece itself, as large as fits; click to view it full-screen.
+          <Zoomable key={current.src} src={current.src} alt={`${title}: ${current.label}`} className="flex h-full w-full items-center justify-center">
+            {/* eslint-disable-next-line @next/next/no-img-element -- static export, no image optimizer */}
+            <img
+              src={asset(current.src)}
+              alt={`${title}: ${current.label}`}
+              className="screen-in max-h-full max-w-full rounded-lg object-contain shadow-[0_20px_50px_rgba(0,0,0,0.45)]"
+            />
+          </Zoomable>
         ) : (
           <div key={view} className="enter-zoom aspect-[4/3] w-[min(100cqw,133cqh)] rounded-lg bg-black/20">
             <ComingSoon />
@@ -169,6 +249,58 @@ export function Showcase({
       )}
     </div>
   );
+}
+
+/**
+ * "tall": a full-page capture, scrolls inside the screen.
+ * "short": shorter than the screen; keeps its full width, top-aligned, and `color` (its own
+ *   bottom edge) fills the rest, so nothing gets cropped.
+ * "fill": about the screen's shape; covers it.
+ */
+type Fit = { mode: "tall" | "short" | "fill"; color?: string };
+
+function measureFit(img: HTMLImageElement, screenRatio: number): Fit {
+  const ratio = img.naturalHeight / img.naturalWidth;
+  const screen = 1 / screenRatio;
+  if (ratio > screen * 1.15) return { mode: "tall" };
+  if (ratio > screen * 0.97) return { mode: "fill" };
+  return { mode: "short", color: bottomColor(img) };
+}
+
+/** Average colour of an image's bottom row, so a short screen can be extended seamlessly. */
+function bottomColor(img: HTMLImageElement) {
+  try {
+    const canvas = document.createElement("canvas");
+    canvas.width = img.naturalWidth;
+    canvas.height = 1;
+    const ctx = canvas.getContext("2d")!;
+    ctx.drawImage(img, 0, img.naturalHeight - 1, img.naturalWidth, 1, 0, 0, img.naturalWidth, 1);
+    const d = ctx.getImageData(0, 0, img.naturalWidth, 1).data;
+    let r = 0, g = 0, b = 0;
+    for (let i = 0; i < d.length; i += 4) {
+      r += d[i];
+      g += d[i + 1];
+      b += d[i + 2];
+    }
+    const n = d.length / 4;
+    return `rgb(${Math.round(r / n)} ${Math.round(g / n)} ${Math.round(b / n)})`;
+  } catch {
+    return "#fff";
+  }
+}
+
+/** Screens named "launcher…" are programs, shown as a window on a desktop. */
+function isApp(s: Screen) {
+  return /^launcher\b/i.test(s.label);
+}
+
+// Desktop wallpaper behind program windows.
+const wallpaper =
+  "radial-gradient(ellipse at 30% 20%, #3a3f6b 0%, transparent 55%), radial-gradient(ellipse at 80% 85%, #5a2a4a 0%, transparent 50%), linear-gradient(160deg, #1c2038, #121420)";
+
+/** Screens named "popup…" are dialogs, shown over the previous screen. */
+function isPopup(s: Screen) {
+  return /^popup\b/i.test(s.label);
 }
 
 function ComingSoon() {
