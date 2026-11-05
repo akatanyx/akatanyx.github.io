@@ -1,15 +1,16 @@
-// Everything personal about the site lives here — edit freely.
+// Everything personal about the site lives here: edit freely.
 export const site = {
-  name: "Aka",
-  tagline: "A bored computer science student.",
+  name: "Daniel Ardi Chandra",
+  // Shown one after another when someone hovers your name on the home page.
+  nicknames: ["Aka", "Akatanyu", "Daniel"],
+  tagline: "Web Developer, Graphic Designer",
   intro:
     "I take on graphic design and web design gigs: brand assets, posters, landing pages and app mockups.",
   // The vertical tag on the right edge of every page.
   code: "CSUGM21 - TLD61",
   socials: {
-    discord: "https://discord.com/",
-    twitter: "https://twitter.com/",
-    youtube: "https://youtube.com/",
+    discord: "http://discord.com/users/311757292536201217",
+    email: "danielardichandra01@gmail.com",
   },
 };
 

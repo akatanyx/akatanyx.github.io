@@ -1,3 +1,4 @@
+import { HelloName } from "@/components/HelloName";
 import { SplitShell } from "@/components/SplitShell";
 import { SocialIcons } from "@/components/SocialIcons";
 import { TransitionLink } from "@/components/TransitionLink";
@@ -11,9 +12,7 @@ export default function Home() {
       scrollLeft={false}
       left={
         <div className="flex min-h-[70dvh] flex-col justify-center px-8 py-20 sm:px-20 lg:h-full lg:px-14 xl:px-18">
-          <h1 className="enter-up text-4xl font-bold tracking-tight sm:text-5xl lg:text-[2.6rem] xl:text-5xl">
-            Hello, I’m {site.name}.
-          </h1>
+          <HelloName className="enter-up text-4xl font-bold tracking-tight text-balance sm:text-5xl lg:text-[2.6rem] xl:text-5xl" />
           <p className="enter-up mt-2 text-base sm:text-lg" style={stagger(1)}>
             {site.tagline}
           </p>

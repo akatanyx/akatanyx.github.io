@@ -32,7 +32,7 @@ export function SplitShell({
         {left}
       </aside>
       <main
-        className={`relative min-w-0 flex-1 text-white lg:h-full ${
+        className={`relative isolate min-w-0 flex-1 text-white lg:h-full ${
           tone === "deep" ? "bg-panel-deep" : "bg-panel"
         }`}
       >
@@ -47,7 +47,7 @@ export function SplitShell({
 export function Decor({ onWhite = false }: { onWhite?: boolean }) {
   const square = `h-2 w-2 ${onWhite ? "bg-neutral-800" : "bg-neutral-200"}`;
   return (
-    <div aria-hidden className={`pointer-events-none ${onWhite ? "fixed inset-0 text-black" : ""}`}>
+    <div aria-hidden className={`pointer-events-none z-20 ${onWhite ? "fixed inset-0 text-black" : "absolute inset-0"}`}>
       <div className="absolute top-8 right-8 grid grid-cols-2 gap-2.5">
         <span className={square} />
         <span className={square} />

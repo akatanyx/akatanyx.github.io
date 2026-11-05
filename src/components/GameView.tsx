@@ -1,23 +1,29 @@
+import { AgentGrid, type AgentWithImage } from "@/components/AgentGrid";
+import { BackgroundVideo } from "@/components/BackgroundVideo";
 import { BackLink } from "@/components/BackLink";
 import { CopyButton } from "@/components/CopyButton";
 import { Media } from "@/components/Media";
 import { SplitShell } from "@/components/SplitShell";
 import { TransitionLink } from "@/components/TransitionLink";
 import { games, toSlug, type Game } from "@/data/games";
-import { findImage } from "@/lib/images";
+import { findImage, findVideo } from "@/lib/images";
 import { stagger } from "@/lib/motion";
 import { formatDate } from "@/lib/site";
-
-type Agent = { name: string; image?: string };
 
 // On desktop the whole page fits the screen; only the agents list scrolls.
 export function GameView({ game }: { game: Game }) {
   const dir = `/games/${game.slug}`;
+  const video = findVideo(`${dir}/background`);
   const [hero, ...thumbs] = [1, 2, 3].map((n) => findImage(`${dir}/screenshot-${n}`));
-  const agents = (game.agents ?? []).map((name) => ({
-    name,
-    image: findImage(`${dir}/agents/${toSlug(name)}`),
-  }));
+  // S-rank first, then A-rank, each alphabetical.
+  const agents = [...(game.agents ?? [])]
+    .sort((a, b) => (a.rank === b.rank ? 0 : a.rank === "S" ? -1 : 1) || a.name.localeCompare(b.name))
+    .map((agent) => ({
+      ...agent,
+      image: findImage(`${dir}/agents/${toSlug(agent.name)}`),
+      elementIcon: findImage(`${dir}/types/${toSlug(agent.element)}`),
+      roleIcon: findImage(`${dir}/types/${toSlug(agent.role)}`),
+    }));
 
   return (
     <SplitShell
@@ -27,8 +33,14 @@ export function GameView({ game }: { game: Game }) {
       scrollRight={false}
       left={<GameSide game={game} avatar={findImage(`${dir}/avatar`)} agents={agents} />}
     >
-      <div className="flex flex-col px-8 pt-20 pb-24 sm:px-14 lg:h-full lg:pt-10 lg:pr-28 lg:pb-12 lg:pl-16">
-        <nav aria-label="Games" className="-mx-8 shrink-0 overflow-x-auto px-8 sm:mx-0 sm:px-0">
+      <div
+        className={`relative flex flex-col px-8 pt-20 pb-24 sm:px-14 lg:h-full lg:pt-10 lg:pr-28 lg:pb-12 lg:pl-16 ${
+          video ? "min-h-[70vh]" : ""
+        }`}
+      >
+        {video && <BackgroundVideo src={video} className="enter-zoom" />}
+
+        <nav aria-label="Games" className="relative -mx-8 shrink-0 overflow-x-auto px-8 sm:mx-0 sm:px-0">
           <ul className="flex gap-8 text-sm whitespace-nowrap lg:justify-end lg:pr-12">
             {games.map((g) => {
               const active = g.slug === game.slug;
@@ -49,30 +61,33 @@ export function GameView({ game }: { game: Game }) {
           </ul>
         </nav>
 
-        <div className="mt-12 flex flex-col lg:mt-10 lg:min-h-0 lg:flex-1 lg:pr-12">
-          <Media
-            src={hero}
-            alt={`${game.name} screenshot`}
-            className="enter-zoom aspect-[16/9] w-full bg-[#c4c4c4] lg:aspect-auto lg:min-h-0 lg:flex-1"
-          />
-          <div className="mt-5 grid shrink-0 grid-cols-2 gap-5 sm:grid-cols-3">
-            {thumbs.map((src, i) => (
-              <Media
-                key={i}
-                src={src}
-                alt={`${game.name} screenshot ${i + 2}`}
-                className="enter-up aspect-[16/9] w-full"
-                style={stagger(i + 3)}
-              />
-            ))}
+        {/* With a background video the right side is just the video; otherwise show screenshots. */}
+        {!video && (
+          <div className="mt-12 flex flex-col lg:mt-10 lg:min-h-0 lg:flex-1 lg:pr-12">
+            <Media
+              src={hero}
+              alt={`${game.name} screenshot`}
+              className="enter-zoom aspect-[16/9] w-full bg-[#c4c4c4] lg:aspect-auto lg:min-h-0 lg:flex-1"
+            />
+            <div className="mt-5 grid shrink-0 grid-cols-2 gap-5 sm:grid-cols-3">
+              {thumbs.map((src, i) => (
+                <Media
+                  key={i}
+                  src={src}
+                  alt={`${game.name} screenshot ${i + 2}`}
+                  className="enter-up aspect-[16/9] w-full"
+                  style={stagger(i + 3)}
+                />
+              ))}
+            </div>
           </div>
-        </div>
+        )}
       </div>
     </SplitShell>
   );
 }
 
-function GameSide({ game, avatar, agents }: { game: Game; avatar?: string; agents: Agent[] }) {
+function GameSide({ game, avatar, agents }: { game: Game; avatar?: string; agents: AgentWithImage[] }) {
   const stats = [
     game.lastPlayed && { label: "Last played", value: formatDate(game.lastPlayed) },
     game.hoursPlayed != null && { label: "Hours played", value: `${game.hoursPlayed.toLocaleString("en-US")} h` },
@@ -89,9 +104,12 @@ function GameSide({ game, avatar, agents }: { game: Game; avatar?: string; agent
           <Media src={avatar} alt={`${game.username}'s profile picture`} className="h-16 w-16 shrink-0 rounded-full" />
         )}
         <div className="min-w-0">
-          <h1 className="text-sm text-neutral-500">{game.name}</h1>
+          <h1 className={game.username ? "text-sm text-neutral-500" : "text-3xl font-bold"}>{game.name}</h1>
           {game.username && <p className="text-2xl leading-tight font-bold">{game.username}</p>}
           {game.accountLevel && <p className="text-sm text-neutral-500">{game.accountLevel}</p>}
+          {!game.username && !game.thoughts && !game.agents && (
+            <p className="mt-2 text-sm text-neutral-500">Nothing here yet.</p>
+          )}
         </div>
       </div>
 
@@ -147,14 +165,7 @@ function GameSide({ game, avatar, agents }: { game: Game; avatar?: string; agent
           <h2 className="shrink-0 text-[11px] tracking-[0.25em] text-neutral-500 uppercase">
             Agents <span className="tracking-normal normal-case">({agents.length})</span>
           </h2>
-          <ul className="mt-3 grid max-h-[22rem] grid-cols-5 gap-x-3 gap-y-4 overflow-y-auto border border-neutral-200 p-3 [scrollbar-width:thin] lg:max-h-none lg:min-h-0 lg:flex-1 xl:grid-cols-6">
-            {agents.map((agent) => (
-              <li key={agent.name} className="min-w-0 text-center">
-                <Media src={agent.image} alt={agent.name} className="mx-auto aspect-square w-full rounded-full" />
-                <p className="mt-1 truncate text-[10px] text-neutral-600">{agent.name}</p>
-              </li>
-            ))}
-          </ul>
+          <AgentGrid agents={agents} />
         </section>
       )}
     </div>

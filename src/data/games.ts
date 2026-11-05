@@ -1,3 +1,12 @@
+export type Agent = {
+  name: string;
+  rank: "S" | "A";
+  /** Attribute, e.g. "Ice", "Ether". */
+  element: string;
+  /** Specialty, e.g. "Attack", "Stun", "Armorer". */
+  role: string;
+};
+
 export type Game = {
   slug: string;
   name: string;
@@ -19,14 +28,14 @@ export type Game = {
   whyLeft?: string;
   /** One string per paragraph. */
   thoughts?: string[];
-  /** Characters you own, in display order. */
-  agents?: string[];
+  /** Agents you own. Shown S-rank first, then A-rank, each alphabetical. */
+  agents?: Agent[];
 };
 
 // Images are picked up automatically from public/games/<slug>/ (png, jpg or webp):
 //   avatar.png                  your in-game profile picture
 //   screenshot-1.png … -3.png   the big shot, then the two under it
-//   agents/<agent-name>.png     one face per agent, e.g. agents/ellen.png
+//   agents/<agent-name>.webp    one face per agent, e.g. agents/ellen.webp
 export const games: Game[] = [
   {
     slug: "zenless-zone-zero",
@@ -39,46 +48,53 @@ export const games: Game[] = [
       "The visuals kind of resemble Persona, but I like its battle system, unlike the other HoYoverse games. It might resemble Dark Souls or Elden Ring, but more fast-paced. It's as fast as fighting games like Street Fighter or Mortal Kombat.",
     ],
     agents: [
-      "Aria",
-      "Anby",
-      "Billy",
-      "Claret",
-      "Harumasa",
-      "Koleda",
-      "Lucia",
-      "Lucy",
-      "Manato",
-      "Miyabi",
-      "Nekomata",
-      "Nicole",
-      "Yinhu",
-      "Piper",
-      "Pulchra",
-      "Rina",
-      "Seth",
-      "Soldier 11",
-      "Soukaku",
-      "Yanagi",
-      "Shunguang",
-      "Yuzuha",
-      "Zhao",
-      "Astra",
-      "Anton",
-      "Ben",
-      "Corin",
-      "Dialyn",
-      "Ellen",
-      "Grace",
-      "Jane",
-      "Lycaon",
-      "Nangong",
-      "Norma",
-      "Remielle",
-      "Sunna",
-      "Velina",
-      "Yidhari",
+      { name: "Aria", rank: "S", element: "Ether", role: "Anomaly" },
+      { name: "Astra", rank: "S", element: "Ether", role: "Support" },
+      { name: "Claret", rank: "S", element: "Electric", role: "Armorer" },
+      { name: "Dialyn", rank: "S", element: "Physical", role: "Stun" },
+      { name: "Ellen", rank: "S", element: "Ice", role: "Attack" },
+      { name: "Grace", rank: "S", element: "Electric", role: "Anomaly" },
+      { name: "Harumasa", rank: "S", element: "Electric", role: "Attack" },
+      { name: "Jane", rank: "S", element: "Physical", role: "Anomaly" },
+      { name: "Koleda", rank: "S", element: "Fire", role: "Stun" },
+      { name: "Lucia", rank: "S", element: "Ether", role: "Support" },
+      { name: "Lycaon", rank: "S", element: "Ice", role: "Stun" },
+      { name: "Miyabi", rank: "S", element: "Frost", role: "Anomaly" },
+      { name: "Nangong", rank: "S", element: "Ether", role: "Stun" },
+      { name: "Nekomata", rank: "S", element: "Physical", role: "Attack" },
+      { name: "Norma", rank: "S", element: "Fire", role: "Stun" },
+      { name: "Remielle", rank: "S", element: "Lumiflux", role: "Anomaly" },
+      { name: "Rina", rank: "S", element: "Electric", role: "Support" },
+      { name: "Shunguang", rank: "S", element: "Honed Edge", role: "Attack" },
+      { name: "Soldier 11", rank: "S", element: "Fire", role: "Attack" },
+      { name: "Sunna", rank: "S", element: "Physical", role: "Support" },
+      { name: "Velina", rank: "S", element: "Wind", role: "Anomaly" },
+      { name: "Yanagi", rank: "S", element: "Electric", role: "Anomaly" },
+      { name: "Yidhari", rank: "S", element: "Ice", role: "Rupture" },
+      { name: "Yuzuha", rank: "S", element: "Physical", role: "Support" },
+      { name: "Zhao", rank: "S", element: "Ice", role: "Defense" },
+      { name: "Zhu Yuan", rank: "S", element: "Ether", role: "Attack" },
+      { name: "Anby", rank: "A", element: "Electric", role: "Stun" },
+      { name: "Anton", rank: "A", element: "Electric", role: "Attack" },
+      { name: "Ben", rank: "A", element: "Fire", role: "Defense" },
+      { name: "Billy", rank: "A", element: "Physical", role: "Attack" },
+      { name: "Corin", rank: "A", element: "Physical", role: "Attack" },
+      { name: "Lucy", rank: "A", element: "Fire", role: "Support" },
+      { name: "Manato", rank: "A", element: "Fire", role: "Rupture" },
+      { name: "Nicole", rank: "A", element: "Ether", role: "Support" },
+      { name: "Piper", rank: "A", element: "Physical", role: "Anomaly" },
+      { name: "Pulchra", rank: "A", element: "Physical", role: "Stun" },
+      { name: "Seth", rank: "A", element: "Electric", role: "Defense" },
+      { name: "Soukaku", rank: "A", element: "Ice", role: "Support" },
+      { name: "Yinhu", rank: "A", element: "Physical", role: "Defense" },
     ],
   },
+  // Not filled in yet: add a username, thoughts, agents, icon.png etc. when ready.
+  { slug: "heartopia", name: "Heartopia" },
+  { slug: "honkai-star-rail", name: "Honkai Star Rail" },
+  { slug: "genshin-impact", name: "Genshin Impact" },
+  { slug: "valorant", name: "Valorant" },
+  { slug: "counter-strike-2", name: "Counter Strike 2" },
 ];
 
 export function getGame(slug: string) {

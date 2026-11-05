@@ -36,33 +36,25 @@ export default function GamesPage() {
         </div>
       </header>
 
-      <div className="mt-14 grid gap-x-10 gap-y-14 md:grid-cols-2 xl:grid-cols-3">
-        {games.map((game, i) => {
-          const dir = `/games/${game.slug}`;
-          const cover = findImage(`${dir}/cover`) ?? findImage(`${dir}/screenshot-1`);
-          return (
+      {/* Laid out like a phone's app drawer: icon and name only. */}
+      <ul className="mt-14 grid grid-cols-3 gap-x-3 gap-y-4 sm:grid-cols-5 lg:grid-cols-7 xl:grid-cols-8">
+        {games.map((game, i) => (
+          <li key={game.slug} className="enter-up" style={stagger(i + 1)}>
             <TransitionLink
-              key={game.slug}
               href={`/games/${game.slug}/`}
               variant="expand"
-              className="enter-right group block"
-              style={stagger(i + 1)}
+              className="group flex flex-col items-center gap-3 rounded-2xl p-3 text-center transition-colors duration-200 hover:bg-black/10 focus-visible:bg-black/10"
             >
-              <div className="overflow-hidden">
-                <Media
-                  src={cover}
-                  alt={game.name}
-                  className="aspect-[16/9] w-full transition-transform duration-500 group-hover:scale-[1.03]"
-                />
-              </div>
-              <h2 className="mt-4 text-xl font-semibold">{game.name}</h2>
-              <p className="text-xs text-neutral-500">
-                {[game.accountLevel, game.agents && `${game.agents.length} agents`].filter(Boolean).join(" · ")}
-              </p>
+              <Media
+                src={findImage(`/games/${game.slug}/icon`)}
+                alt=""
+                className="aspect-square w-full max-w-24 rounded-[22%] shadow-[0_4px_14px_rgba(0,0,0,0.18)] transition-transform duration-300 group-hover:-translate-y-1 group-hover:scale-105"
+              />
+              <h2 className="line-clamp-2 text-sm leading-tight">{game.name}</h2>
             </TransitionLink>
-          );
-        })}
-      </div>
+          </li>
+        ))}
+      </ul>
     </WhitePage>
   );
 }

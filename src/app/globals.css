@@ -26,8 +26,8 @@ html[data-arrive="expand"] {
   --base: 380ms;
 }
 
-/* Leaving: contents fade out. */
-html[data-leaving] aside > *,
+/* Leaving: contents fade out. A "fade" (switching projects or games) leaves the sidebar in place. */
+html[data-leaving="expand"] aside > *,
 html[data-leaving] main > div:last-child,
 html[data-leaving] .white-page > :not([aria-hidden]) {
   opacity: 0;
@@ -115,7 +115,51 @@ html[data-leaving="fade"] main > div:last-child {
   }
 }
 
+/* Device mockup: fade a new page in on the screen. */
+.screen-in {
+  animation: screen-in 0.4s ease both;
+}
+@keyframes screen-in {
+  from {
+    opacity: 0;
+  }
+}
+
+/* Home page nickname loop: in from the right, hold to read, out to the left. */
+.nickname {
+  animation: nickname 2.2s ease both;
+}
+@keyframes nickname {
+  0% {
+    opacity: 0;
+    transform: translateX(32px);
+  }
+  18%,
+  78% {
+    opacity: 1;
+    transform: translateX(0);
+  }
+  100% {
+    opacity: 0;
+    transform: translateX(-32px);
+  }
+}
+@keyframes nickname-fade {
+  0%,
+  100% {
+    opacity: 0;
+  }
+  18%,
+  78% {
+    opacity: 1;
+  }
+}
+
 @media (prefers-reduced-motion: reduce) {
+  .nickname {
+    animation-name: nickname-fade;
+  }
+
   .enter-up,
   .enter-left,
   .enter-right,
