@@ -2,9 +2,9 @@
 
 @theme inline {
   --font-sans: var(--font-poppins);
-  --color-panel: #4d4d4d;
-  --color-panel-deep: #3b3b3b;
-  --color-placeholder: #d9d9d9;
+  --color-panel: #2a2c33;
+  --color-panel-deep: #141519;
+  --color-placeholder: #3C3F48;
 }
 
 body {

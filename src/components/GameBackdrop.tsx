@@ -116,10 +116,6 @@ function Ember() {
           <stop offset="0" stopColor="#96bae7" stopOpacity="0.55" />
           <stop offset="1" stopColor="#96bae7" stopOpacity="0" />
         </radialGradient>
-        <linearGradient id="eb-slab" x1="0" y1="1" x2="1" y2="0">
-          <stop offset="0" stopColor="#757bb9" />
-          <stop offset="1" stopColor="#b9d3f2" />
-        </linearGradient>
         <radialGradient id="eb-lantern">
           <stop offset="0" stopColor="#ffe3b8" />
           <stop offset="0.5" stopColor="#f08955" />
@@ -141,20 +137,6 @@ function Ember() {
           <circle key={i} cx={x} cy={y} r={i % 3 ? 1.6 : 2.6} opacity={i % 2 ? 0.6 : 0.9} />
         ))}
       </g>
-      <text
-        x="-20"
-        y="560"
-        fontSize="300"
-        fontWeight="900"
-        fontStyle="italic"
-        fill="none"
-        stroke="#3b5089"
-        strokeWidth="6"
-        transform="rotate(-8 400 500)"
-        letterSpacing="-10"
-      >
-        HU TAO
-      </text>
 
       {/* Periwinkle brush slab, bottom left */}
       <path
@@ -162,22 +144,6 @@ function Ember() {
         fill="url(#eb-slab)"
         opacity="0.9"
       />
-      {/* Mist ribbons */}
-      <g fill="none" stroke="#eef6ff" strokeLinecap="round">
-        <path d="M-20 640 C 160 560, 300 700, 520 600" strokeWidth="10" opacity="0.7" />
-        <path d="M20 690 C 200 620, 320 740, 540 650" strokeWidth="4" opacity="0.5" />
-        <path d="M600 900 C 760 820, 860 900, 1020 800" strokeWidth="9" opacity="0.6" />
-      </g>
-      {/* Lantern orange and maroon streaks */}
-      <path d="M120 640 L560 520 L548 540 L130 660 Z" fill="#f08955" />
-      <path d="M640 820 L1000 700 L1000 716 L650 838 Z" fill="#7e373b" />
-      <path d="M560 860 L990 735 L1000 760 L585 890 Z" fill="#f08955" opacity="0.85" />
-      <g fill="#b9d3f2" opacity="0.8">
-        <rect x="70" y="300" width="140" height="10" />
-        <rect x="110" y="318" width="70" height="6" />
-        <rect x="780" y="460" width="170" height="12" />
-        <rect x="820" y="480" width="90" height="6" />
-      </g>
       {/* Sky lanterns: a soft glow round a small warm lamp */}
       {[
         [880, 600, 26],

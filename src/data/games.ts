@@ -67,11 +67,14 @@ export const games: Game[] = [
     username: "Aka",
     uid: "131028433",
     accountLevel: "Inter-Knot Level 59/60 · Asia Server",
-    // Right side: Ellen "On Campus" (art.webp) on a dark street backdrop.
+    platform: "PC and Mobile",
     backdrop: "street",
     artFit: { height: 142, right: -8, bottom: -50 },
+    started: [
+      "2024-7-5",
+    ],
     thoughts: [
-      "I think it's a cool game. I quit [Genshin Impact](https://en.wikipedia.org/wiki/Genshin_Impact) and [Honkai Star Rail](https://en.wikipedia.org/wiki/Honkai:_Star_Rail) to play Zenless. Not because I don't have the time to play the rest, but because Zenless hooks me more than the others.",
+      "I quit [Genshin Impact](https://en.wikipedia.org/wiki/Genshin_Impact) and [Honkai Star Rail](https://en.wikipedia.org/wiki/Honkai:_Star_Rail) to play Zenless. Not because I don't have the time to play the rest, but because Zenless hooks me more than the others.",
       "The visuals kind of resemble [Persona](https://en.wikipedia.org/wiki/Persona_%28series%29), but I like its battle system, unlike the other HoYoverse games. It might resemble [Dark Souls](https://en.wikipedia.org/wiki/Dark_Souls) or [Elden Ring](https://en.wikipedia.org/wiki/Elden_Ring), but more fast-paced. It's as fast as fighting games like [Street Fighter](https://en.wikipedia.org/wiki/Street_Fighter) or [Mortal Kombat](https://en.wikipedia.org/wiki/Mortal_Kombat).",
     ],
     agents: [
@@ -121,13 +124,12 @@ export const games: Game[] = [
     name: "Honkai Star Rail",
     username: "Aka",
     uid: "800927883",
-    accountLevel: "Trailblaze Level 70 · Asia Server",
+    accountLevel: "Trailblaze Level 70/70 · Asia Server",
     thoughts: [
       "I liked this game more than [Genshin Impact](https://en.wikipedia.org/wiki/Genshin_Impact), but everything started to topple once Penacony's story ended during [Sunday's last fight](https://honkai-star-rail.fandom.com/wiki/And_on_the_Eighth_Day), in which I have no more interest in this game. Although expect me going back to this game due to [Ellen Joe](https://honkai-star-rail.fandom.com/wiki/Ellen) existing. I quit Honkai Star Rail for [Zenless](https://en.wikipedia.org/wiki/Zenless_Zone_Zero), and I liked Ellen, so hearing her back here makes me excited.",
     ],
-    // Right side: Ellen (art.webp) on a neon graffiti backdrop, after the collab banner.
     backdrop: "neon",
-    artFit: { height: 114, right: -10, bottom: -12 },
+    artFit: { height: 150, right: -20, bottom: -20 },
     charactersLabel: "Characters",
     agents: [
       { name: "Archer", rank: "5★", element: "Quantum", role: "The Hunt" },
@@ -177,13 +179,12 @@ export const games: Game[] = [
     name: "Genshin Impact",
     username: "Aka",
     uid: "817492734",
-    accountLevel: "Adventure Rank 55 · Asia Server",
+    accountLevel: "Adventure Rank 55/60 · Asia Server",
     thoughts: [
       "My first game for the Hoyoverse line-up of games was [Honkai Impact 3rd](https://en.wikipedia.org/wiki/Honkai_Impact_3rd), but I felt like this game is my first. Honkai Impact was a bit of like my past and I never played it seriously. The first game and the hyped game that expands open-world kind of games with anime styled characters. I quit it when [Honkai Star Rail](https://en.wikipedia.org/wiki/Honkai:_Star_Rail) came, just because Genshin is boring. I left when [Kokomi](https://genshin-impact.fandom.com/wiki/Sangonomiya_Kokomi) came, during her [ocean-y area](https://genshin-impact.fandom.com/wiki/Watatsumi_Island) reveal.",
     ],
-    // Right side: Hu Tao, Cherries Snow-Laden (art.webp), on a lantern-night backdrop.
     backdrop: "ember",
-    artFit: { height: 98, right: -6, bottom: -4 },
+    artFit: { height: 130, right: -10, bottom: -25 },
     charactersLabel: "Characters",
     agents: [
       { name: "Alhaitham", rank: "5★", element: "Dendro", role: "Sword" },
