@@ -12,7 +12,19 @@ const vignette = [
 ].join(", ");
 
 /** A muted, looping video that fills its (positioned) parent, with a vignette over it. */
-export function BackgroundVideo({ src, className = "" }: { src: string; className?: string }) {
+export function BackgroundVideo({
+  src,
+  position,
+  scale,
+  className = "",
+}: {
+  src: string;
+  /** CSS object-position: which part stays in view when the video is cropped to fit. */
+  position?: string;
+  /** Zoom in, growing from `position`. */
+  scale?: number;
+  className?: string;
+}) {
   const ref = useRef<HTMLVideoElement>(null);
 
   useEffect(() => {
@@ -30,6 +42,7 @@ export function BackgroundVideo({ src, className = "" }: { src: string; classNam
         ref={ref}
         src={asset(src)}
         className="h-full w-full object-cover"
+        style={{ objectPosition: position, scale, transformOrigin: position }}
         autoPlay
         muted
         loop

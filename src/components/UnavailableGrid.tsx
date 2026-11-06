@@ -1,5 +1,6 @@
 "use client";
 
+import { HoverUnderline } from "@/components/HoverUnderline";
 import { useRef, useState, type ReactNode } from "react";
 import { Media } from "@/components/Media";
 import { TransitionLink } from "@/components/TransitionLink";
@@ -134,7 +135,7 @@ export function LockedItem({
       <button
         type="button"
         onClick={() => press(id)}
-        className={`cursor-not-allowed text-left opacity-45 ${className}`}
+        className={`group cursor-not-allowed text-left opacity-45 ${className}`}
         style={style}
       >
         <span
@@ -185,9 +186,12 @@ export function GameTabs({
               <TransitionLink
                 href={t.href}
                 aria-current={active ? "page" : undefined}
-                className={`underline-offset-4 transition-opacity ${active ? "underline" : "opacity-80 hover:opacity-100"}`}
+                className={`group transition-opacity ${active ? "" : "opacity-80 hover:opacity-100"}`}
               >
-                {t.name}
+                {/* Same underline as the home menu: it grows out from where the cursor comes in. */}
+                <HoverUnderline on={active} thin>
+                  {t.name}
+                </HoverUnderline>
               </TransitionLink>
             </li>
           );

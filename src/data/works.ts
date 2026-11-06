@@ -37,6 +37,8 @@ export type Work = {
   tools?: string[];
   /** Tools for the Graphic Design view, when they differ from `tools` (the web stack). */
   designTools?: string[];
+  /** File names to leave off the Works card cover, e.g. ["instagram-promotion"]. */
+  coverSkip?: string[];
   /** In the laptop/phone, shrink each whole screenshot to fit the screen instead of scrolling. */
   fitHeight?: boolean;
   description?: string;
@@ -88,6 +90,7 @@ export const works: Work[] = [
     role: "Graphic Designer",
     year: "2021-2025",
     tools: ["Figma"],
+    coverSkip: ["instagram-promotion"],
     showcase: ["design"],
     description:
       "This one was posters I made for my own business. The design might vary from one to another due to me improving my design each year, although I cannot pinpoint what year it is, but it covers most of my design style changes.",

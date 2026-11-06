@@ -1,4 +1,6 @@
+import { FirstVisitTip } from "@/components/FirstVisitTip";
 import { HelloName } from "@/components/HelloName";
+import { HoverUnderline } from "@/components/HoverUnderline";
 import { SplitShell } from "@/components/SplitShell";
 import { SocialIcons } from "@/components/SocialIcons";
 import { TransitionLink } from "@/components/TransitionLink";
@@ -29,10 +31,16 @@ export default function Home() {
             aria-label="See my works"
             className="absolute -bottom-11 left-8 grid h-[88px] w-[88px] place-items-center rounded-full bg-white shadow-[0_4px_12px_rgba(0,0,0,0.35)] transition-transform hover:scale-105 lg:-right-11 lg:bottom-10 lg:left-auto"
           >
-            {/* Points down on phones (the panels are stacked), right on desktop. */}
-            <svg viewBox="0 0 24 24" className="h-11 w-11 rotate-90 lg:rotate-0" fill="none" stroke="black" strokeWidth={2.5}>
-              <path d="M9 4l8 8-8 8" strokeLinecap="round" strokeLinejoin="round" />
-            </svg>
+            {/* Points down on phones (the panels are stacked), right on desktop; the inner span
+                nudges along that direction. */}
+            <span className="rotate-90 lg:rotate-0">
+              <span className="arrow-nudge block">
+                <svg viewBox="0 0 24 24" className="h-11 w-11" fill="none" stroke="black" strokeWidth={2.5}>
+                  <path d="M9 4l8 8-8 8" strokeLinecap="round" strokeLinejoin="round" />
+                </svg>
+              </span>
+            </span>
+            <FirstVisitTip text="Click here to see my works!" />
           </TransitionLink>
         </div>
       }
@@ -53,13 +61,17 @@ export default function Home() {
             style={stagger(3 + i)}
           >
             <span className="text-sm font-normal text-white/40">{item.n}</span>
-            <span className="transition-transform group-hover:translate-x-2">{item.label}</span>
+            <span className="transition-transform group-hover:translate-x-2">
+              <HoverUnderline>{item.label}</HoverUnderline>
+            </span>
           </TransitionLink>
         ))}
         {/* Not open yet: pressing it takes a hit and says it's unavailable. */}
         <LockedItem id="card-games" className="enter-right text-4xl font-semibold sm:text-6xl" style={stagger(5)}>
           <span className="text-sm font-normal text-white/40">03</span>
-          <span>Card Games</span>
+          <span>
+            <HoverUnderline>Card Games</HoverUnderline>
+          </span>
         </LockedItem>
       </nav>
     </SplitShell>

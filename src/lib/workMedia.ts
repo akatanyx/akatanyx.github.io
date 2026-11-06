@@ -1,5 +1,5 @@
 import path from "node:path";
-import { findImage, listImages } from "@/lib/images";
+import { findImage, imageSize, listImages } from "@/lib/images";
 
 /** One item in the viewer. A book has several `pages`; `src` is its first page. */
 export type Screen = { label: string; src: string; pages?: string[]; cover?: boolean };
@@ -69,4 +69,25 @@ function labelFrom(src: string) {
   const name = path.posix.basename(src).replace(/\.[^.]+$/, "").replace(/^\d+[-_ ]*/, "");
   const words = name.split(/[-_ ]+/).filter(Boolean);
   return words.map((w) => w[0].toUpperCase() + w.slice(1)).join(" ") || "Page";
+}
+
+export type Preview = { src: string; w: number; h: number };
+
+/**
+ * Everything a project shows, in order, for its Works card: design pieces (a book counts once,
+ * by its first page), then website and app screens, then plain gallery images.
+ */
+export function workPreviews(slug: string, books: Book[] = []): Preview[] {
+  const views = workViews(slug, books);
+  const thumbs = listImages(`/works/${slug}/thumbnails`);
+  const srcs = [
+    ...views.design.map((s) => s.src),
+    ...views.desktop.map((s) => s.src),
+    ...views.mobile.map((s) => s.src),
+    ...thumbs,
+  ];
+  const seen = new Set<string>();
+  return srcs
+    .filter((s) => !seen.has(s) && seen.add(s))
+    .map((src) => ({ src, ...(imageSize(src) ?? { w: 4, h: 5 }) }));
 }

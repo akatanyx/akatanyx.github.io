@@ -227,6 +227,49 @@ html[data-leaving="fade"] main > div:last-child {
   }
 }
 
+/* Home arrow: a small nudge in the direction it points, then a rest. */
+.arrow-nudge {
+  animation: arrow-nudge 1.6s ease-in-out infinite;
+}
+@keyframes arrow-nudge {
+  0%,
+  45%,
+  100% {
+    transform: translateX(0);
+  }
+  20% {
+    transform: translateX(6px);
+  }
+  32% {
+    transform: translateX(1px);
+  }
+}
+
+/* First-visit tip: pops in once the page has settled, then stays still. */
+.first-tip {
+  animation: toast-pop 0.3s cubic-bezier(0.2, 0.9, 0.3, 1.3) 1.2s both;
+}
+@media (prefers-reduced-motion: reduce) {
+  .arrow-nudge,
+  .first-tip {
+    animation: none;
+  }
+}
+
+/* Works card hover: the project's pieces drift left; two copies make the loop seamless. */
+/* Longhands, not the shorthand: the shorthand would reset the paused/running play state. */
+.work-strip {
+  animation-name: work-strip;
+  animation-duration: var(--strip-duration, 30s);
+  animation-timing-function: linear;
+  animation-iteration-count: infinite;
+}
+@keyframes work-strip {
+  to {
+    transform: translateX(-50%);
+  }
+}
+
 /* Home page nickname loop: in from the right, hold to read, out to the left. */
 .nickname {
   animation: nickname 2.2s ease both;
@@ -268,5 +311,73 @@ html[data-leaving="fade"] main > div:last-child {
   .enter-zoom,
   html[data-arrive] aside {
     animation: none;
+  }
+}
+
+/* A cut-out character drifting gently up and down, e.g. the Star Rail art. */
+@keyframes art-float {
+  from {
+    translate: 0 0;
+  }
+  to {
+    translate: 0 -12px;
+  }
+}
+.art-float {
+  animation: art-float 3.2s ease-in-out infinite alternate;
+}
+@media (prefers-reduced-motion: reduce) {
+  .art-float {
+    animation: none;
+  }
+}
+
+/* A "loved" agent icon (AgentGrid): pulsing pink ring and twinkling sparkles. */
+.loved-glow {
+  box-shadow:
+    0 0 0 2px #ff7eb0,
+    0 0 10px 2px rgba(255, 64, 140, 0.5);
+  animation: loved-pulse 2.4s ease-in-out infinite;
+}
+@keyframes loved-pulse {
+  50% {
+    box-shadow:
+      0 0 0 2px #ff4f93,
+      0 0 18px 5px rgba(255, 64, 140, 0.7);
+  }
+}
+.loved-sparkle {
+  opacity: 0;
+  animation-name: loved-twinkle;
+  animation-timing-function: ease-out;
+  animation-iteration-count: infinite;
+  filter: drop-shadow(0 0 2px rgba(255, 64, 140, 0.9)) drop-shadow(0 0 5px rgba(255, 120, 180, 0.6));
+}
+@keyframes loved-twinkle {
+  /* The twinkle takes the first 40% of the cycle; the rest is a pause before it comes again. */
+  0% {
+    translate: 0 0;
+    scale: 0.2;
+    rotate: 0deg;
+    opacity: 0;
+  }
+  12% {
+    scale: 1;
+    opacity: 1;
+  }
+  40%,
+  100% {
+    translate: var(--dx, 0) -26px;
+    scale: 0.3;
+    rotate: 90deg;
+    opacity: 0;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .loved-glow {
+    animation: none;
+  }
+  .loved-sparkle {
+    display: none;
   }
 }

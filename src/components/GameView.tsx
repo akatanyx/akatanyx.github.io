@@ -1,14 +1,16 @@
 import { AgentGrid, type AgentWithImage } from "@/components/AgentGrid";
 import { BackgroundVideo } from "@/components/BackgroundVideo";
+import { GameBackdrop } from "@/components/GameBackdrop";
 import { BackLink } from "@/components/BackLink";
 import { GameTabs } from "@/components/UnavailableGrid";
+import { RichText } from "@/components/RichText";
 import { CopyButton } from "@/components/CopyButton";
 import { Media } from "@/components/Media";
 import { SplitShell } from "@/components/SplitShell";
 import { games as allGames, toSlug, type Game } from "@/data/games";
 import { findImage, findVideo } from "@/lib/images";
 import { stagger } from "@/lib/motion";
-import { formatDate } from "@/lib/site";
+import { asset, formatDate } from "@/lib/site";
 
 // On desktop the whole page fits the screen; only the agents list scrolls.
 /** Which list a game page belongs to: Games, or Card Games (same layout, own folder). */
@@ -19,10 +21,12 @@ export function GameView({ game, section = gamesSection }: { game: Game; section
   const games = section.items;
   const dir = `/${section.path}/${game.slug}`;
   const video = findVideo(`${dir}/background`);
+  // A cut-out character drawn over a backdrop, in place of screenshots.
+  const art = !video && game.backdrop ? findImage(`${dir}/art`) : undefined;
   const [hero, ...thumbs] = [1, 2, 3].map((n) => findImage(`${dir}/screenshot-${n}`));
-  // S-rank first, then A-rank, each alphabetical.
+  // Highest rank first (S, 5★, then A, 4★), each rank alphabetical.
   const agents = [...(game.agents ?? [])]
-    .sort((a, b) => (a.rank === b.rank ? 0 : a.rank === "S" ? -1 : 1) || a.name.localeCompare(b.name))
+    .sort((a, b) => rankOrder(a.rank) - rankOrder(b.rank) || a.name.localeCompare(b.name))
     .map((agent) => ({
       ...agent,
       image: findImage(`${dir}/agents/${toSlug(agent.name)}`),
@@ -42,10 +46,34 @@ export function GameView({ game, section = gamesSection }: { game: Game; section
     >
       <div
         className={`relative flex flex-col px-8 pt-20 pb-24 sm:px-14 lg:h-full lg:pt-10 lg:pr-28 lg:pb-12 lg:pl-16 ${
-          video ? "min-h-[70vh]" : ""
+          video || art ? "min-h-[70vh]" : ""
         }`}
       >
-        {video && <BackgroundVideo src={video} className="enter-zoom" />}
+        {video && (
+          <BackgroundVideo src={video} position={game.videoPosition} scale={game.videoScale} className="enter-zoom" />
+        )}
+
+        {art && (
+          <div aria-hidden className="pointer-events-none absolute inset-0 overflow-hidden">
+            <GameBackdrop kind={game.backdrop!} />
+            {/* Bobs gently up and down (the wrapper), separate from the entrance zoom (the image). */}
+            <div
+              className="art-float absolute"
+              style={{
+                height: `${game.artFit?.height ?? 100}%`,
+                right: `${game.artFit?.right ?? 0}%`,
+                bottom: `${game.artFit?.bottom ?? 0}%`,
+              }}
+            >
+              {/* eslint-disable-next-line @next/next/no-img-element -- static export, no image optimizer */}
+              <img
+                src={asset(art)}
+                alt=""
+                className="enter-zoom h-full w-auto max-w-none drop-shadow-[0_24px_40px_rgba(20,10,40,0.35)]"
+              />
+            </div>
+          </div>
+        )}
 
         <nav aria-label="Games" className="relative -mx-8 shrink-0 overflow-x-auto px-8 sm:mx-0 sm:px-0">
           <GameTabs
@@ -61,7 +89,7 @@ export function GameView({ game, section = gamesSection }: { game: Game; section
         </nav>
 
         {/* With a background video the right side is just the video; otherwise show screenshots. */}
-        {!video && (
+        {!video && !art && (
           <div className="mt-12 flex flex-col lg:mt-10 lg:min-h-0 lg:flex-1 lg:pr-12">
             <Media
               src={hero}
@@ -163,20 +191,30 @@ function GameSide({
           <h2 className="text-[11px] tracking-[0.25em] text-neutral-500 uppercase">Thoughts</h2>
           <div className="mt-2 space-y-2 text-[13px] leading-relaxed">
             {game.thoughts.map((p) => (
-              <p key={p}>{p}</p>
+              <p key={p}>
+                <RichText text={p} />
+              </p>
             ))}
           </div>
         </section>
       )}
 
-      {agents.length > 0 && (
+      {game.agents && (
         <section className="enter-up mt-7 flex flex-col lg:min-h-0 lg:flex-1" style={stagger(3)}>
           <h2 className="shrink-0 text-[11px] tracking-[0.25em] text-neutral-500 uppercase">
-            Agents <span className="tracking-normal normal-case">({agents.length})</span>
+            {game.charactersLabel ?? "Agents"} <span className="tracking-normal normal-case">({agents.length})</span>
           </h2>
-          <AgentGrid agents={agents} />
+          {agents.length ? (
+            <AgentGrid agents={agents} />
+          ) : (
+            <p className="mt-3 grid min-h-28 place-items-center border border-neutral-200 p-3 text-xs text-neutral-400 lg:flex-1">
+              Coming soon
+            </p>
+          )}
         </section>
       )}
     </div>
   );
 }
+
+const rankOrder = (rank: string) => Math.max(0, ["S", "5★", "A", "4★"].indexOf(rank));
