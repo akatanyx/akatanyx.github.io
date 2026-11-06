@@ -1,6 +1,8 @@
 import type { Metadata } from "next";
 import { Poppins } from "next/font/google";
+import { Curtain } from "@/components/Curtain";
 import { DesktopNotice } from "@/components/DesktopNotice";
+import { PageLoader } from "@/components/PageLoader";
 import { TransitionEffects } from "@/components/TransitionEffects";
 import { site } from "@/lib/site";
 import "./globals.css";
@@ -22,6 +24,8 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
       <body className="min-h-full font-sans">
         {children}
         <TransitionEffects />
+        <PageLoader />
+        <Curtain />
         <DesktopNotice />
       </body>
     </html>

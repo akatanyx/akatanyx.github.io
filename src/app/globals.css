@@ -143,6 +143,15 @@ html[data-leaving="fade"] main > div:last-child {
   }
 }
 
+/* Page loader: fades in while a page change is loading, and out once it lands. */
+.page-loader {
+  transition: opacity 0.25s ease;
+}
+.page-loader[data-visible="false"] {
+  opacity: 0;
+  pointer-events: none;
+}
+
 /* Device mockup: fade a new page in on the screen. */
 .screen-in {
   animation: screen-in 0.4s ease both;
@@ -380,4 +389,15 @@ html[data-leaving="fade"] main > div:last-child {
   .loved-sparkle {
     display: none;
   }
+}
+
+/* No visible scrollbars anywhere: every element still scrolls with the wheel, trackpad,
+   touch and keyboard, and hidden scrollbars take up no space, so nothing shifts. */
+*,
+*::before,
+*::after {
+  scrollbar-width: none;
+}
+*::-webkit-scrollbar {
+  display: none;
 }

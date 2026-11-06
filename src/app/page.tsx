@@ -29,7 +29,7 @@ export default function Home() {
             href="/works/"
             variant="expand"
             aria-label="See my works"
-            className="absolute -bottom-11 left-8 grid h-[88px] w-[88px] place-items-center rounded-full bg-white shadow-[0_4px_12px_rgba(0,0,0,0.35)] transition-transform hover:scale-105 lg:-right-11 lg:bottom-10 lg:left-auto"
+            className="screen-in absolute -bottom-11 left-8 grid h-[88px] w-[88px] place-items-center rounded-full bg-white shadow-[0_4px_12px_rgba(0,0,0,0.35)] transition-transform hover:scale-105 lg:-right-11 lg:bottom-10 lg:left-auto"
           >
             {/* Points down on phones (the panels are stacked), right on desktop; the inner span
                 nudges along that direction. */}

@@ -1,0 +1,172 @@
+diff --git a/src/app/layout.tsx b/src/app/layout.tsx
+index ece72fa..94b0ebf 100644
+--- a/src/app/layout.tsx
++++ b/src/app/layout.tsx
+@@ -1,6 +1,7 @@
+ import type { Metadata } from "next";
+ import { Poppins } from "next/font/google";
+ import { DesktopNotice } from "@/components/DesktopNotice";
++import { PageLoader } from "@/components/PageLoader";
+ import { TransitionEffects } from "@/components/TransitionEffects";
+ import { site } from "@/lib/site";
+ import "./globals.css";
+@@ -22,6 +23,7 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
+       <body className="min-h-full font-sans">
+         {children}
+         <TransitionEffects />
++        <PageLoader />
+         <DesktopNotice />
+       </body>
+     </html>
+diff --git a/src/components/PageLoader.tsx b/src/components/PageLoader.tsx
+new file mode 100644
+index 0000000..222a366
+--- /dev/null
++++ b/src/components/PageLoader.tsx
+@@ -0,0 +1,19 @@
++"use client";
++
++import { useIsNavigating } from "@/lib/navigation";
++
++/** Full-screen spinner shown while a page change is in progress. */
++export function PageLoader() {
++  const navigating = useIsNavigating();
++  if (!navigating) return null;
++
++  return (
++    <div
++      role="status"
++      aria-label="Loading"
++      className="fixed inset-0 z-[100] flex cursor-wait items-center justify-center bg-white"
++    >
++      <span className="size-8 animate-spin rounded-full border-[3px] border-black border-t-transparent motion-reduce:animate-none" />
++    </div>
++  );
++}
+diff --git a/src/components/TransitionEffects.tsx b/src/components/TransitionEffects.tsx
+index 99ce0f1..7c6e688 100644
+--- a/src/components/TransitionEffects.tsx
++++ b/src/components/TransitionEffects.tsx
+@@ -1,16 +1,22 @@
+ "use client";
+ 
+ import { usePathname } from "next/navigation";
+-import { useEffect } from "react";
++import { useEffect, useRef } from "react";
++import { endNavigation, startNavigation } from "@/lib/navigation";
+ 
+ /**
+  * Runs after each new page has painted: turns the exit state set by TransitionLink
+  * into an arrival state, so the incoming page can animate from where the last one left off.
++ * Also hides the page loader, and shows it for browser back/forward navigation.
+  */
+ export function TransitionEffects() {
+   const pathname = usePathname();
++  const pathRef = useRef(pathname);
+ 
+   useEffect(() => {
++    pathRef.current = pathname;
++    endNavigation();
++
+     const root = document.documentElement;
+     const leaving = root.dataset.leaving;
+     if (!leaving) return;
+@@ -20,5 +26,13 @@ export function TransitionEffects() {
+     return () => clearTimeout(t);
+   }, [pathname]);
+ 
++  useEffect(() => {
++    function onPopState() {
++      if (window.location.pathname !== pathRef.current) startNavigation();
++    }
++    window.addEventListener("popstate", onPopState);
++    return () => window.removeEventListener("popstate", onPopState);
++  }, []);
++
+   return null;
+ }
+diff --git a/src/components/TransitionLink.tsx b/src/components/TransitionLink.tsx
+index 2332dc7..247ede2 100644
+--- a/src/components/TransitionLink.tsx
++++ b/src/components/TransitionLink.tsx
+@@ -3,6 +3,7 @@
+ import Link from "next/link";
+ import { useRouter } from "next/navigation";
+ import type { ComponentProps } from "react";
++import { startNavigation } from "@/lib/navigation";
+ 
+ /**
+  * "expand": the white panel grows to fill the screen while its contents fade (moving between sections).
+@@ -29,13 +30,21 @@ export function TransitionLink({ href, variant = "fade", onClick, ...rest }: Pro
+         onClick?.(e);
+         // Let new-tab clicks and reduced-motion users through untouched.
+         if (e.defaultPrevented || e.button !== 0 || e.metaKey || e.ctrlKey || e.shiftKey || e.altKey) return;
+-        if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
++        // Same-page links don't change the pathname, so there's nothing to show a loader for.
++        const samePage = new URL(href, window.location.href).pathname === window.location.pathname;
++        if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
++          if (!samePage) startNavigation();
++          return;
++        }
+ 
+         e.preventDefault();
+         const root = document.documentElement;
+         if (root.dataset.leaving) return;
+         root.dataset.leaving = variant;
+-        setTimeout(() => router.push(href), duration[variant]);
++        setTimeout(() => {
++          if (!samePage) startNavigation();
++          router.push(href);
++        }, duration[variant]);
+         // Never leave the page blank if navigation fails.
+         setTimeout(() => delete root.dataset.leaving, duration[variant] + 10000);
+       }}
+diff --git a/src/lib/navigation.ts b/src/lib/navigation.ts
+new file mode 100644
+index 0000000..78dc17b
+--- /dev/null
++++ b/src/lib/navigation.ts
+@@ -0,0 +1,43 @@
++"use client";
++
++import { useSyncExternalStore } from "react";
++
++/**
++ * Tracks whether a route change is in flight, so a spinner can cover the gap
++ * between the exit animation and the next page rendering.
++ */
++
++let pending = false;
++let safetyTimer: ReturnType<typeof setTimeout> | undefined;
++const listeners = new Set<() => void>();
++
++function emit() {
++  listeners.forEach((l) => l());
++}
++
++/** Shows the spinner. Clears itself after 10s so it can never get stuck on screen. */
++export function startNavigation() {
++  if (!pending) {
++    pending = true;
++    emit();
++  }
++  clearTimeout(safetyTimer);
++  safetyTimer = setTimeout(endNavigation, 10000);
++}
++
++/** Hides the spinner. Called once the new pathname has rendered. */
++export function endNavigation() {
++  clearTimeout(safetyTimer);
++  if (!pending) return;
++  pending = false;
++  emit();
++}
++
++function subscribe(listener: () => void) {
++  listeners.add(listener);
++  return () => listeners.delete(listener);
++}
++
++export function useIsNavigating() {
++  return useSyncExternalStore(subscribe, () => pending, () => false);
++}

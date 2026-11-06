@@ -40,7 +40,7 @@ export function SplitShell({
     >
       <aside
         className={`relative z-10 shrink-0 bg-white lg:h-full ${stickyMobile ? "max-lg:sticky max-lg:top-0 max-lg:shadow-[0_1px_0_rgba(0,0,0,0.08)]" : ""} ${leftWidth} ${
-          scrollLeft ? "lg:overflow-y-auto" : ""
+          scrollLeft ? "lg:overflow-y-auto no-scrollbar" : ""
         }`}
       >
         {left}
@@ -51,7 +51,7 @@ export function SplitShell({
         }`}
       >
         <Decor />
-        <div className={`h-full ${scrollRight ? "lg:overflow-y-auto" : "lg:overflow-hidden"}`}>{children}</div>
+        <div className={`h-full ${scrollRight ? "lg:overflow-y-auto no-scrollbar" : "lg:overflow-hidden"}`}>{children}</div>
       </main>
     </div>
   );

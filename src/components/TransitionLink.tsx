@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import type { ComponentProps } from "react";
+import { startNavigation } from "@/lib/navigation";
 
 /**
  * "expand": the white panel grows to fill the screen while its contents fade (moving between sections).
@@ -29,13 +30,21 @@ export function TransitionLink({ href, variant = "fade", onClick, ...rest }: Pro
         onClick?.(e);
         // Let new-tab clicks and reduced-motion users through untouched.
         if (e.defaultPrevented || e.button !== 0 || e.metaKey || e.ctrlKey || e.shiftKey || e.altKey) return;
-        if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+        // Same-page links don't change the pathname, so there's nothing to show a loader for.
+        const samePage = new URL(href, window.location.href).pathname === window.location.pathname;
+        if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
+          if (!samePage) startNavigation();
+          return;
+        }
 
         e.preventDefault();
         const root = document.documentElement;
         if (root.dataset.leaving) return;
         root.dataset.leaving = variant;
-        setTimeout(() => router.push(href), duration[variant]);
+        setTimeout(() => {
+          if (!samePage) startNavigation();
+          router.push(href);
+        }, duration[variant]);
         // Never leave the page blank if navigation fails.
         setTimeout(() => delete root.dataset.leaving, duration[variant] + 10000);
       }}
