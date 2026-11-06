@@ -1,6 +1,6 @@
 "use client";
 
-import { useRef, type CSSProperties, type PointerEvent } from "react";
+import type { CSSProperties } from "react";
 import { frames, type Frame } from "@/lib/devices";
 import { asset } from "@/lib/site";
 import type { Preview } from "@/lib/workMedia";
@@ -40,29 +40,8 @@ export function WorkCard({
   secondsPerPiece?: number;
 }) {
   const lanes = splitIntoRows(strip, rows);
-  const box = useRef<HTMLDivElement>(null);
-
-  // Mouse parallax: the cursor's position over the card, from -1 to 1 on each axis, as CSS vars.
-  function onMove(e: PointerEvent<HTMLDivElement>) {
-    const r = e.currentTarget.getBoundingClientRect();
-    e.currentTarget.style.setProperty(
-      "--px",
-      (((e.clientX - r.left) / r.width) * 2 - 1).toFixed(3),
-    );
-    e.currentTarget.style.setProperty(
-      "--py",
-      (((e.clientY - r.top) / r.height) * 2 - 1).toFixed(3),
-    );
-  }
-  function onLeave() {
-    for (const v of ["--px", "--py"]) box.current?.style.setProperty(v, "0");
-  }
-
   return (
     <div
-      ref={box}
-      onPointerMove={onMove}
-      onPointerLeave={onLeave}
       className="relative aspect-[4/5] w-full overflow-hidden bg-neutral-100"
     >
       <div className="absolute inset-0 transition-opacity duration-500 group-hover:opacity-0">
@@ -72,16 +51,12 @@ export function WorkCard({
       {strip.length > 1 && (
         <div
           aria-hidden
-          className="absolute inset-0 flex flex-col justify-center gap-2 bg-neutral-300 px-0 py-3 opacity-0 transition-opacity duration-500 group-hover:opacity-100"
+          className="work-hover-strip absolute inset-0 flex flex-col justify-center gap-2 bg-neutral-300 px-0 py-3 opacity-0 transition-opacity duration-500 group-hover:opacity-100"
         >
           {lanes.map((lane, r) => (
-            // Each row sits at a different depth, so they shift by different amounts.
             <div
               key={r}
-              className="min-h-0 flex-1 transition-transform duration-300 ease-out"
-              style={{
-                transform: `translate(calc(var(--px, 0) * ${-10 - r * 8}px), calc(var(--py, 0) * ${-4 - r * 3}px))`,
-              }}
+              className="min-h-0 flex-1"
             >
               {/* Two copies back to back, so sliding by half loops seamlessly. */}
               <div
@@ -155,11 +130,11 @@ function CoverArt({ title, cover }: { title: string; cover: Cover }) {
   if (cover.kind === "devices") {
     // Big and overlapping: the laptop runs off both edges, the phone sits over its corner.
     return (
-      <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_50%_35%,#f5f5f5,#cfcfcf)]">
+      <div className="absolute inset-0 device-backdrop bg-[radial-gradient(ellipse_at_50%_35%,#f5f5f5,#cfcfcf)]">
         <Device
           frame={frames.desktop!}
           src={cover.desktop}
-          className="absolute top-[40%] left-[-14%] w-[128%] -translate-y-1/2"
+          className="absolute top-[38%] left-[2%] z-0 w-[112%] -translate-y-1/2"
         />
         {cover.mobile ? (
           <Device
@@ -172,7 +147,7 @@ function CoverArt({ title, cover }: { title: string; cover: Cover }) {
             <Device
               frame={frames.desktop!}
               src={cover.desktop2}
-              className="absolute top-[70%] left-[8%] z-10 w-[118%] -translate-y-1/2"
+              className="absolute top-[76%] left-[38%] z-10 w-[84%] -translate-y-1/2 drop-shadow-[0_12px_18px_rgba(0,0,0,0.45)]"
             />
           )
         )}
@@ -185,7 +160,7 @@ function CoverArt({ title, cover }: { title: string; cover: Cover }) {
     // Large phones fanned out: the middle one in front, the outer ones tucked behind it.
     const shown = cover.screens.slice(0, 3);
     return (
-      <div className="absolute inset-0 flex items-center justify-center bg-[radial-gradient(ellipse_at_50%_35%,#f5f5f5,#cfcfcf)]">
+      <div className="absolute inset-0 flex items-center justify-center device-backdrop bg-[radial-gradient(ellipse_at_50%_35%,#f5f5f5,#cfcfcf)]">
         {shown.map((src, i) => {
           const middle = shown.length === 3 ? i === 1 : i === 0;
           return (
@@ -208,9 +183,9 @@ function CoverArt({ title, cover }: { title: string; cover: Cover }) {
 
   if (cover.kind === "thumbnails") {
     // Three thumbnails cascading from top-left to bottom-right; the front one gets a play button.
-    const shown = cover.images.slice(0, 3);
+    const shown = cover.images.slice(3, 6);
     return (
-      <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_50%_35%,#f5f5f5,#cfcfcf)]">
+      <div className="absolute inset-0 device-backdrop bg-[radial-gradient(ellipse_at_50%_35%,#f5f5f5,#cfcfcf)]">
         {shown.map((src, i) => (
           <div
             key={src}
@@ -317,14 +292,14 @@ function Collage({ title, images }: { title: string; images: Preview[] }) {
     <div
       role="img"
       aria-label={title}
-      className="absolute inset-0 bg-[radial-gradient(ellipse_at_50%_35%,#f5f5f5,#cfcfcf)]"
+      className="absolute inset-0 device-backdrop bg-[radial-gradient(ellipse_at_50%_35%,#f5f5f5,#cfcfcf)]"
     >
       {picks.map((p, i) => {
         const [left, top, width, rotate] = posterSpots[i];
         return (
           <div
             key={p.src}
-            className="absolute bg-white p-[2.5%] shadow-[0_10px_25px_rgba(0,0,0,0.3)]"
+            className="absolute bg-[#ffffff] p-[2.5%] shadow-[0_10px_25px_rgba(0,0,0,0.3)]"
             style={{
               left: `${left}%`,
               top: `${top}%`,

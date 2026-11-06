@@ -2,6 +2,10 @@
 
 @theme inline {
   --font-sans: var(--font-poppins);
+}
+
+/* Not inline, so dark mode can override them. */
+@theme {
   --color-panel: #2a2c33;
   --color-panel-deep: #141519;
   --color-placeholder: #3C3F48;
@@ -400,4 +404,109 @@ html[data-leaving="fade"] main > div:last-child {
 }
 *::-webkit-scrollbar {
   display: none;
+}
+
+/* ---------- Dark mode ----------
+   Palette (from the three shades):
+     #131418  base: page, side panel, solid white surfaces
+     #2a2d36  panel: the main panel, raised surfaces
+     #3c3f49  highlight: borders, placeholders, dot pattern
+   Light text and Street red only for selection, focus rings and the toggle dot.
+   Light mode is unchanged. ThemeToggle adds the html.dark class. */
+html.dark {
+  color-scheme: dark;
+  /* Black stays dark, so translucent black overlays (lightboxes, tints) darken as they should.
+     Black text is handled separately below. */
+  --color-black: #131418;
+  --color-panel: #2a2d36;
+  --color-panel-deep: #131418;
+  --color-placeholder: #3c3f49;
+  --color-neutral-50: #131418;
+  --color-neutral-100: #181a20;
+  --color-neutral-200: #2a2d36;
+  --color-neutral-300: #3c3f49;
+  --color-neutral-400: #4b4f5b;
+  --color-neutral-500: #6b6f7b;
+  --color-neutral-600: #8e919a;
+  --color-neutral-700: #b3b6bd;
+  --color-neutral-800: #d4d6da;
+  --color-neutral-900: #e6e7ea;
+  --color-neutral-950: #f4f4f5;
+}
+html.dark body {
+  background-color: #131418;
+  background-image: radial-gradient(#3c3f49 1.2px, transparent 1.4px);
+  background-size: 14px 14px;
+  color: #ececec;
+}
+/* Black text becomes light, since the black colour itself is now dark. */
+html.dark .text-black {
+  color: #ececec;
+}
+/* The work card's hover strip stays dark, so hovering darkens the card instead of lightening it. */
+html.dark .work-hover-strip {
+  background-color: #131418;
+}
+/* Solid white surfaces (aside, cards, pills) and solid black surfaces become palette colours.
+   White and black text is left alone, so it stays readable on them. */
+html.dark .bg-white,
+html.dark .bg-black {
+  background-color: #131418;
+}
+/* Black borders (boxes, outlines) become a subtle highlight instead of bright light lines. */
+html.dark .border-black {
+  border-color: #3c3f49;
+}
+/* Work cards: the light backdrop behind the device mockups becomes the palette's dark radial. */
+html.dark .device-backdrop {
+  background-image: radial-gradient(ellipse at 50% 35%, #3c3f49, #131418);
+}
+/* Poster covers (Mak Semarangan, Hobbystation Hideout, LapisQoe): their white frames stay white. */
+html.dark .bg-white.poster-tile {
+  background-color: #ffffff;
+}
+/* Grey text is brightened so it stays readable on dark surfaces. */
+html.dark .text-neutral-50,
+html.dark .text-neutral-100,
+html.dark .text-neutral-200,
+html.dark .text-neutral-300 {
+  color: #6b6f7b;
+}
+html.dark .text-neutral-400 {
+  color: #7a7e8a;
+}
+html.dark .text-neutral-500 {
+  color: #8e919a;
+}
+html.dark .text-neutral-600 {
+  color: #a8abb3;
+}
+html.dark .text-neutral-700 {
+  color: #bfc2c8;
+}
+html.dark .text-neutral-800 {
+  color: #d4d6da;
+}
+html.dark .text-neutral-900,
+html.dark .text-neutral-950 {
+  color: #ececec;
+}
+/* Agent hover card: stays a dark card with light text. */
+html.dark .agent-tip {
+  background-color: #2a2d36;
+  color: #ececec;
+}
+/* Home arrow: a light disc with a dark arrow, so it stands out from the dark panel. */
+html.dark .home-arrow {
+  background-color: #ececec;
+}
+html.dark .home-arrow svg {
+  stroke: #131418;
+}
+html.dark ::selection {
+  background: #e8303f;
+  color: #ffffff;
+}
+html.dark :focus-visible {
+  outline-color: #e8303f;
 }

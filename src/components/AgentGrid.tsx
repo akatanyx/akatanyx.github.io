@@ -67,7 +67,7 @@ export function AgentGrid({ agents }: { agents: AgentWithImage[] }) {
         createPortal(
           <div
             role="tooltip"
-            className="pointer-events-none fixed z-50 -translate-y-full rounded-lg bg-black px-3 py-2 text-white shadow-lg"
+            className="agent-tip pointer-events-none fixed z-50 -translate-y-full rounded-lg bg-black px-3 py-2 text-white shadow-lg"
             style={{ left: hover.x, top: hover.y - 8 }}
           >
             <p className="flex items-baseline justify-center gap-2 text-sm font-semibold whitespace-nowrap">
