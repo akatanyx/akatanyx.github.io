@@ -70,9 +70,7 @@ export const games: Game[] = [
     platform: "PC and Mobile",
     backdrop: "street",
     artFit: { height: 142, right: -8, bottom: -50 },
-    started: [
-      "2024-7-5",
-    ],
+    started: "2024-7-5",
     thoughts: [
       "I quit [Genshin Impact](https://en.wikipedia.org/wiki/Genshin_Impact) and [Honkai Star Rail](https://en.wikipedia.org/wiki/Honkai:_Star_Rail) to play Zenless. Not because I don't have the time to play the rest, but because Zenless hooks me more than the others.",
       "The visuals kind of resemble [Persona](https://en.wikipedia.org/wiki/Persona_%28series%29), but I like its battle system, unlike the other HoYoverse games. It might resemble [Dark Souls](https://en.wikipedia.org/wiki/Dark_Souls) or [Elden Ring](https://en.wikipedia.org/wiki/Elden_Ring), but more fast-paced. It's as fast as fighting games like [Street Fighter](https://en.wikipedia.org/wiki/Street_Fighter) or [Mortal Kombat](https://en.wikipedia.org/wiki/Mortal_Kombat).",
