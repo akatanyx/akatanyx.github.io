@@ -2,6 +2,7 @@ import { HelloName } from "@/components/HelloName";
 import { SplitShell } from "@/components/SplitShell";
 import { SocialIcons } from "@/components/SocialIcons";
 import { TransitionLink } from "@/components/TransitionLink";
+import { LockedItem } from "@/components/UnavailableGrid";
 import { stagger } from "@/lib/motion";
 import { site } from "@/lib/site";
 
@@ -55,6 +56,11 @@ export default function Home() {
             <span className="transition-transform group-hover:translate-x-2">{item.label}</span>
           </TransitionLink>
         ))}
+        {/* Not open yet: pressing it takes a hit and says it's unavailable. */}
+        <LockedItem id="card-games" className="enter-right text-4xl font-semibold sm:text-6xl" style={stagger(5)}>
+          <span className="text-sm font-normal text-white/40">03</span>
+          <span>Card Games</span>
+        </LockedItem>
       </nav>
     </SplitShell>
   );

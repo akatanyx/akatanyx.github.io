@@ -171,6 +171,62 @@ html[data-leaving="fade"] main > div:last-child {
   }
 }
 
+/* Card Games: a locked tile "takes damage" when pressed. */
+.took-hit {
+  animation: took-hit 0.45s ease-out;
+}
+.took-hit .hit-text {
+  animation: hit-text 0.6s ease-out;
+}
+/* When the shaking element is also the text (e.g. "03 Card Games" on Home). */
+.took-hit.hit-text {
+  animation:
+    took-hit 0.45s ease-out,
+    hit-text 0.6s ease-out;
+}
+@keyframes took-hit {
+  0%,
+  100% {
+    transform: translateX(0);
+  }
+  15% {
+    transform: translateX(-6px);
+    filter: drop-shadow(0 0 10px rgb(239 68 68 / 0.9)) sepia(1) saturate(6) hue-rotate(-40deg);
+  }
+  30% {
+    transform: translateX(5px);
+  }
+  45% {
+    transform: translateX(-4px);
+  }
+  60% {
+    transform: translateX(3px);
+  }
+  80% {
+    transform: translateX(-1px);
+  }
+}
+@keyframes hit-text {
+  0%,
+  30%,
+  60% {
+    color: #ef4444;
+  }
+  15%,
+  45% {
+    color: #fca5a5;
+  }
+}
+.toast-pop {
+  animation: toast-pop 0.25s cubic-bezier(0.2, 0.9, 0.3, 1.3) both;
+}
+@keyframes toast-pop {
+  from {
+    opacity: 0;
+    transform: translateY(10px) scale(0.92);
+  }
+}
+
 /* Home page nickname loop: in from the right, hold to read, out to the left. */
 .nickname {
   animation: nickname 2.2s ease both;

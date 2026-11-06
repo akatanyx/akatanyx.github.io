@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, type CSSProperties } from "react";
 import { BookViewer } from "@/components/BookViewer";
 import { Media } from "@/components/Media";
 import { Zoomable } from "@/components/Zoomable";
@@ -86,7 +86,7 @@ export function Showcase({
           {description && <p className="mt-3 max-w-xl text-sm leading-relaxed text-white/75">{description}</p>}
         </div>
         {views.length > 1 && (
-          <div role="tablist" aria-label="View" className="flex shrink-0 rounded-full bg-black/25 p-1 text-sm">
+          <div role="tablist" aria-label="View" className="flex w-full rounded-full bg-black/25 p-1 text-xs sm:text-sm lg:w-auto lg:shrink-0">
             {views.map((v) => (
               <button
                 key={v}
@@ -94,11 +94,13 @@ export function Showcase({
                 role="tab"
                 aria-selected={view === v}
                 onClick={() => setView(v)}
-                className={`flex items-center gap-2 rounded-full px-4 py-1.5 whitespace-nowrap transition-colors ${
+                className={`flex flex-1 items-center justify-center gap-1.5 rounded-full px-2 py-1.5 whitespace-nowrap transition-colors sm:gap-2 sm:px-4 lg:flex-none ${
                   view === v ? "bg-white text-black" : "text-white/70 hover:text-white"
                 }`}
               >
-                <ViewIcon view={v} />
+                <span className="max-[380px]:hidden">
+                  <ViewIcon view={v} />
+                </span>
                 {viewLabel[v]}
               </button>
             ))}
@@ -107,7 +109,10 @@ export function Showcase({
       </header>
 
       {/* The stage is a size container, so what's on it can fit both its width and height. */}
-      <div className="mt-6 flex h-[60vh] min-h-0 items-center justify-center [container-type:size] lg:h-auto lg:flex-1">
+      <div
+        className="mt-6 flex h-[var(--stage-h)] min-h-0 items-center justify-center [container-type:size] lg:h-auto lg:flex-1"
+        style={{ "--stage-h": frame ? `min(72dvh, calc((100vw - 4rem) / ${frame.ratio}))` : "65dvh" } as CSSProperties}
+      >
         {frame ? (
           <div
             key={view}

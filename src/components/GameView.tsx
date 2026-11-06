@@ -1,18 +1,23 @@
 import { AgentGrid, type AgentWithImage } from "@/components/AgentGrid";
 import { BackgroundVideo } from "@/components/BackgroundVideo";
 import { BackLink } from "@/components/BackLink";
+import { GameTabs } from "@/components/UnavailableGrid";
 import { CopyButton } from "@/components/CopyButton";
 import { Media } from "@/components/Media";
 import { SplitShell } from "@/components/SplitShell";
-import { TransitionLink } from "@/components/TransitionLink";
-import { games, toSlug, type Game } from "@/data/games";
+import { games as allGames, toSlug, type Game } from "@/data/games";
 import { findImage, findVideo } from "@/lib/images";
 import { stagger } from "@/lib/motion";
 import { formatDate } from "@/lib/site";
 
 // On desktop the whole page fits the screen; only the agents list scrolls.
-export function GameView({ game }: { game: Game }) {
-  const dir = `/games/${game.slug}`;
+/** Which list a game page belongs to: Games, or Card Games (same layout, own folder). */
+export type GameSection = { path: string; label: string; items: Game[] };
+const gamesSection: GameSection = { path: "games", label: "Games", items: allGames };
+
+export function GameView({ game, section = gamesSection }: { game: Game; section?: GameSection }) {
+  const games = section.items;
+  const dir = `/${section.path}/${game.slug}`;
   const video = findVideo(`${dir}/background`);
   const [hero, ...thumbs] = [1, 2, 3].map((n) => findImage(`${dir}/screenshot-${n}`));
   // S-rank first, then A-rank, each alphabetical.
@@ -33,7 +38,7 @@ export function GameView({ game }: { game: Game }) {
       scrollRight={false}
       // Phones: just the profile, thoughts and agents for now.
       hideRightOnMobile
-      left={<GameSide game={game} avatar={findImage(`${dir}/avatar`)} agents={agents} />}
+      left={<GameSide game={game} section={section} avatar={findImage(`${dir}/avatar`)} agents={agents} />}
     >
       <div
         className={`relative flex flex-col px-8 pt-20 pb-24 sm:px-14 lg:h-full lg:pt-10 lg:pr-28 lg:pb-12 lg:pl-16 ${
@@ -43,24 +48,16 @@ export function GameView({ game }: { game: Game }) {
         {video && <BackgroundVideo src={video} className="enter-zoom" />}
 
         <nav aria-label="Games" className="relative -mx-8 shrink-0 overflow-x-auto px-8 sm:mx-0 sm:px-0">
-          <ul className="flex gap-8 text-sm whitespace-nowrap lg:justify-end lg:pr-12">
-            {games.map((g) => {
-              const active = g.slug === game.slug;
-              return (
-                <li key={g.slug}>
-                  <TransitionLink
-                    href={`/games/${g.slug}/`}
-                    aria-current={active ? "page" : undefined}
-                    className={`underline-offset-4 transition-opacity ${
-                      active ? "underline" : "opacity-80 hover:opacity-100"
-                    }`}
-                  >
-                    {g.name}
-                  </TransitionLink>
-                </li>
-              );
-            })}
-          </ul>
+          <GameTabs
+            current={game.slug}
+            tabs={games.map((g) => ({
+              slug: g.slug,
+              name: g.name,
+              href: `/${section.path}/${g.slug}/`,
+              // Nothing written yet: locked, like on the list page.
+              locked: !(g.username || g.thoughts || g.agents),
+            }))}
+          />
         </nav>
 
         {/* With a background video the right side is just the video; otherwise show screenshots. */}
@@ -89,7 +86,17 @@ export function GameView({ game }: { game: Game }) {
   );
 }
 
-function GameSide({ game, avatar, agents }: { game: Game; avatar?: string; agents: AgentWithImage[] }) {
+function GameSide({
+  game,
+  section,
+  avatar,
+  agents,
+}: {
+  game: Game;
+  section: GameSection;
+  avatar?: string;
+  agents: AgentWithImage[];
+}) {
   const stats = [
     game.lastPlayed && { label: "Last played", value: formatDate(game.lastPlayed) },
     game.hoursPlayed != null && { label: "Hours played", value: `${game.hoursPlayed.toLocaleString("en-US")} h` },
@@ -99,7 +106,7 @@ function GameSide({ game, avatar, agents }: { game: Game; avatar?: string; agent
 
   return (
     <div className="flex flex-col px-8 py-10 sm:px-14 lg:h-full lg:px-12 lg:py-10">
-      <BackLink href="/games/">Back to Games</BackLink>
+      <BackLink href={`/${section.path}/`}>{`Back to ${section.label}`}</BackLink>
 
       <div className="enter-up mt-8 flex shrink-0 items-center gap-4">
         {game.username && (

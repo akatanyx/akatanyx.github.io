@@ -1,11 +1,10 @@
 import type { Metadata } from "next";
 import { BackLink } from "@/components/BackLink";
-import { Media } from "@/components/Media";
 import { TransitionLink } from "@/components/TransitionLink";
+import { UnavailableGrid } from "@/components/UnavailableGrid";
 import { WhitePage } from "@/components/WhitePage";
 import { games } from "@/data/games";
 import { findImage } from "@/lib/images";
-import { stagger } from "@/lib/motion";
 import { site } from "@/lib/site";
 
 export const metadata: Metadata = { title: `Games | ${site.name}` };
@@ -36,25 +35,15 @@ export default function GamesPage() {
         </div>
       </header>
 
-      {/* Laid out like a phone's app drawer: icon and name only. */}
-      <ul className="mt-14 grid grid-cols-3 gap-x-3 gap-y-4 sm:grid-cols-5 lg:grid-cols-7 xl:grid-cols-8">
-        {games.map((game, i) => (
-          <li key={game.slug} className="enter-up" style={stagger(i + 1)}>
-            <TransitionLink
-              href={`/games/${game.slug}/`}
-              variant="expand"
-              className="group flex flex-col items-center gap-3 rounded-2xl p-3 text-center transition-colors duration-200 hover:bg-black/10 focus-visible:bg-black/10"
-            >
-              <Media
-                src={findImage(`/games/${game.slug}/icon`)}
-                alt=""
-                className="aspect-square w-full max-w-24 rounded-[22%] shadow-[0_4px_14px_rgba(0,0,0,0.18)] transition-transform duration-300 group-hover:-translate-y-1 group-hover:scale-105"
-              />
-              <h2 className="line-clamp-2 text-sm leading-tight">{game.name}</h2>
-            </TransitionLink>
-          </li>
-        ))}
-      </ul>
+      {/* Games with nothing written yet are locked: pressing one says it's unavailable. */}
+      <UnavailableGrid
+        items={games.map((g) => ({
+          slug: g.slug,
+          name: g.name,
+          icon: findImage(`/games/${g.slug}/icon`),
+          href: g.username || g.thoughts || g.agents ? `/games/${g.slug}/` : undefined,
+        }))}
+      />
     </WhitePage>
   );
 }

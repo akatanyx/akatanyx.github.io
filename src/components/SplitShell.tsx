@@ -33,7 +33,8 @@ export function SplitShell({
 }: Props) {
   return (
     <div
-      className={`flex flex-col lg:h-dvh lg:flex-row lg:overflow-hidden ${
+      // overflow-x-clip: nothing wider than a phone can push the page sideways.
+      className={`flex flex-col overflow-x-clip lg:h-dvh lg:flex-row lg:overflow-hidden ${
         fitMobile ? "h-dvh overflow-hidden" : "min-h-dvh"
       }`}
     >
